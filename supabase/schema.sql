@@ -9,6 +9,7 @@ create table if not exists public.leads (
   order_id text not null unique,
   patente text not null,
   email text not null,
+  telefono text,
   cuit text,
   amount integer not null default 0,
   status text not null default 'pending'
@@ -25,6 +26,7 @@ create table if not exists public.leads (
 );
 
 create index if not exists leads_email_idx on public.leads (email);
+create index if not exists leads_telefono_idx on public.leads (telefono);
 create index if not exists leads_status_idx on public.leads (status);
 create index if not exists leads_created_at_idx on public.leads (created_at desc);
 create index if not exists leads_payment_id_idx on public.leads (payment_id);

@@ -1,8 +1,14 @@
 import type { MetadataRoute } from "next";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const url = process.env.NEXT_PUBLIC_BASE_URL ?? "https://informe-dominio-cordoba.vercel.app";
+  const base =
+    process.env.NEXT_PUBLIC_BASE_URL ?? "https://informe-dominio-cordoba.vercel.app";
+  const now = new Date();
   return [
-    { url: `${url}/`, lastModified: new Date(), changeFrequency: "weekly", priority: 1 },
+    { url: `${base}/`, lastModified: now, changeFrequency: "weekly", priority: 1.0 },
+    { url: `${base}/servicios`, lastModified: now, changeFrequency: "weekly", priority: 0.9 },
+    { url: `${base}/terminos`, lastModified: now, changeFrequency: "yearly", priority: 0.3 },
+    { url: `${base}/privacidad`, lastModified: now, changeFrequency: "yearly", priority: 0.3 },
+    { url: `${base}/arrepentimiento`, lastModified: now, changeFrequency: "yearly", priority: 0.3 },
   ];
 }

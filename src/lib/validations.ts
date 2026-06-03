@@ -17,6 +17,14 @@ export const leadSchema = z.object({
     .email("Ingresá un email válido")
     .max(120, "Email demasiado largo")
     .transform((v) => v.toLowerCase().trim()),
+  telefono: z
+    .string()
+    .min(8, "Ingresá un teléfono válido")
+    .max(20, "Teléfono demasiado largo")
+    .transform((v) => v.replace(/[^\d+]/g, ""))
+    .refine((v) => /^(\+?54)?\d{10}$|^\+\d{10,14}$/.test(v), {
+      message: "Ej: 351 234 5678 (cód. área + número)",
+    }),
   cuit: z
     .string()
     .max(13, "CUIT/CUIL demasiado largo")

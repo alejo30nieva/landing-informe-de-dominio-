@@ -6,11 +6,11 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 const links = [
-  { href: "#inicio", label: "Inicio" },
-  { href: "#que-es", label: "¿Qué es?" },
-  { href: "#servicios", label: "Servicios" },
-  { href: "#faq", label: "Preguntas Frecuentes" },
-  { href: "#contacto", label: "Contacto" },
+  { href: "/#inicio", label: "Inicio" },
+  { href: "/#que-es", label: "¿Qué es?" },
+  { href: "/servicios", label: "Servicios" },
+  { href: "/#faq", label: "Preguntas Frecuentes" },
+  { href: "/#contacto", label: "Contacto" },
 ];
 
 export function Header() {
@@ -34,7 +34,7 @@ export function Header() {
       )}
     >
       <div className="container mx-auto flex h-16 items-center justify-between">
-        <Link href="#inicio" className="flex items-center gap-2 group">
+        <Link href="/" className="flex items-center gap-2 group">
           <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-brand-700 text-white shadow-soft">
             <FileCheck2 className="h-5 w-5" />
           </span>
@@ -62,7 +62,7 @@ export function Header() {
 
         <div className="flex items-center gap-2">
           <Button asChild className="hidden md:inline-flex">
-            <a href="#formulario">Consultar Informe</a>
+            <a href="/#formulario">Consultar Informe</a>
           </Button>
           <button
             type="button"
@@ -89,7 +89,7 @@ export function Header() {
               </a>
             ))}
             <Button asChild className="mt-2 w-full">
-              <a href="#formulario" onClick={() => setOpen(false)}>
+              <a href="/#formulario" onClick={() => setOpen(false)}>
                 Consultar Informe
               </a>
             </Button>

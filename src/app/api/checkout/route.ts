@@ -51,7 +51,7 @@ export async function POST(req: NextRequest) {
 
   const orderId = generateOrderId();
   const amount = INFORME_PRICE_ARS;
-  const { patente, email, cuit, method } = parsed.data;
+  const { patente, email, telefono, cuit, method } = parsed.data;
 
   // 1) Persistimos lead (si está configurado Supabase). No bloqueamos si falla.
   let supaSaved = false;
@@ -61,6 +61,7 @@ export async function POST(req: NextRequest) {
       order_id: orderId,
       patente,
       email,
+      telefono,
       cuit: cuit || null,
       amount,
       status: "pending",
@@ -74,15 +75,19 @@ export async function POST(req: NextRequest) {
     console.warn("[checkout] supabase no configurado o error:", (e as Error).message);
   }
 
-  // 2) Para transferencia devolvemos datos bancarios
-  if (method === "transferencia") {
+  // 2) Para transferencia / QR devolvemos datos bancarios.
+  //    QR usa la imagen estática (BANK_QR_URL) o el alias del CVU MP para que el cliente
+  //    transfiera y luego mande el comprobante por WhatsApp.
+  if (method === "transferencia" || method === "qr") {
     return NextResponse.json({
       ok: true,
       orderId,
       titular: process.env.BANK_TITULAR ?? "Gestoría Córdoba",
-      banco: process.env.BANK_NAME ?? "Banco Nación",
+      banco: process.env.BANK_NAME ?? "Mercado Pago",
       alias: process.env.BANK_ALIAS ?? "GESTORIA.CBA.MP",
       cbu: process.env.BANK_CBU ?? "0000003100012345678901",
+      qrUrl: process.env.BANK_QR_URL ?? null,
+      amount,
     });
   }
 

@@ -42,6 +42,32 @@
   }
 }
 
+/* Prose para páginas legales */
+.prose-legal {
+  @apply text-ink-700 text-[15px] leading-relaxed;
+}
+.prose-legal h2 {
+  @apply text-xl font-bold text-brand-950 mt-8 mb-3;
+}
+.prose-legal h3 {
+  @apply text-base font-semibold text-brand-950 mt-6 mb-2;
+}
+.prose-legal p {
+  @apply mb-4;
+}
+.prose-legal ul {
+  @apply list-disc pl-6 mb-4 space-y-1.5;
+}
+.prose-legal ol {
+  @apply list-decimal pl-6 mb-4 space-y-1.5;
+}
+.prose-legal a {
+  @apply text-brand-700 underline-offset-2 hover:underline;
+}
+.prose-legal strong {
+  @apply text-brand-950 font-semibold;
+}
+
 /* Toaster Sonner override sutil */
 [data-sonner-toaster] {
   --normal-bg: #ffffff;

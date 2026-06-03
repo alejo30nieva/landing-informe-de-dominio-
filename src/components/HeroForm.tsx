@@ -3,7 +3,15 @@ import { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "framer-motion";
-import { CreditCard, QrCode, Lock, ShieldCheck, ArrowRight } from "lucide-react";
+import {
+  CreditCard,
+  QrCode,
+  Lock,
+  ShieldCheck,
+  ArrowRight,
+  CheckCircle2,
+  MapPin,
+} from "lucide-react";
 import { toast } from "sonner";
 
 import { Input } from "@/components/ui/input";
@@ -26,13 +34,14 @@ export function HeroForm() {
     control,
     setValue,
     watch,
-    formState: { errors, isSubmitting, isValid, touchedFields },
+    formState: { errors, isSubmitting, isValid, touchedFields, dirtyFields },
   } = useForm<LeadInput>({
     resolver: zodResolver(leadSchema),
     mode: "onChange",
     defaultValues: {
       patente: "",
       email: "",
+      telefono: "",
       cuit: "",
       terms: false as unknown as true,
       website: "",
@@ -40,10 +49,11 @@ export function HeroForm() {
   });
 
   const patente = watch("patente");
+  const showOk = (name: keyof LeadInput) =>
+    !errors[name] && (touchedFields as any)[name] && (dirtyFields as any)[name];
 
   const onSubmit = (data: LeadInput) => {
     if (data.website) {
-      // honeypot — silent reject
       toast.error("No pudimos procesar la solicitud");
       return;
     }
@@ -74,9 +84,13 @@ export function HeroForm() {
             </div>
           </div>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
-            <div className="space-y-1.5">
-              <Label htmlFor="patente">Patente del vehículo</Label>
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-3.5" noValidate>
+            <Field
+              label="Patente del vehículo"
+              error={errors.patente?.message}
+              hint="Formato Mercosur o tradicional"
+              ok={showOk("patente")}
+            >
               <Input
                 id="patente"
                 inputMode="text"
@@ -85,25 +99,19 @@ export function HeroForm() {
                 aria-invalid={!!errors.patente}
                 invalid={!!errors.patente}
                 {...register("patente")}
-                onChange={(e) => {
-                  const masked = maskPatente(e.target.value);
-                  setValue("patente", masked, {
+                onChange={(e) =>
+                  setValue("patente", maskPatente(e.target.value), {
                     shouldValidate: true,
                     shouldTouch: true,
-                  });
-                }}
+                    shouldDirty: true,
+                  })
+                }
                 value={patente ?? ""}
-                className="font-mono tracking-widest uppercase"
+                className="font-mono tracking-widest uppercase pr-9"
               />
-              {errors.patente ? (
-                <p className="text-xs text-danger">{errors.patente.message}</p>
-              ) : (
-                <p className="text-xs text-ink-500">Formato Mercosur o tradicional</p>
-              )}
-            </div>
+            </Field>
 
-            <div className="space-y-1.5">
-              <Label htmlFor="email">Email</Label>
+            <Field label="Email" error={errors.email?.message} ok={showOk("email")}>
               <Input
                 id="email"
                 type="email"
@@ -111,32 +119,50 @@ export function HeroForm() {
                 placeholder="tu@email.com"
                 aria-invalid={!!errors.email}
                 invalid={!!errors.email}
+                className="pr-9"
                 {...register("email")}
               />
-              {errors.email && (
-                <p className="text-xs text-danger">{errors.email.message}</p>
-              )}
-            </div>
+            </Field>
 
-            <div className="space-y-1.5">
-              <Label htmlFor="cuit" className="flex items-center justify-between">
-                <span>CUIT / CUIL</span>
-                <span className="text-xs font-normal text-ink-500">Opcional</span>
-              </Label>
+            <Field
+              label="Teléfono / WhatsApp"
+              error={errors.telefono?.message}
+              hint="Te avisamos por WhatsApp cuando esté listo"
+              ok={showOk("telefono")}
+            >
+              <Input
+                id="telefono"
+                inputMode="tel"
+                autoComplete="tel"
+                placeholder="351 234 5678"
+                aria-invalid={!!errors.telefono}
+                invalid={!!errors.telefono}
+                className="pr-9"
+                {...register("telefono")}
+              />
+            </Field>
+
+            <Field
+              label={
+                <>
+                  CUIT / CUIL <span className="text-xs font-normal text-ink-500">— opcional</span>
+                </>
+              }
+              error={errors.cuit?.message}
+              ok={showOk("cuit")}
+            >
               <Input
                 id="cuit"
                 inputMode="numeric"
                 placeholder="20-12345678-9"
                 aria-invalid={!!errors.cuit}
                 invalid={!!errors.cuit}
+                className="pr-9"
                 {...register("cuit")}
               />
-              {errors.cuit && (
-                <p className="text-xs text-danger">{errors.cuit.message}</p>
-              )}
-            </div>
+            </Field>
 
-            {/* Honeypot anti-spam (oculto) */}
+            {/* Honeypot anti-spam */}
             <div className="hidden" aria-hidden="true">
               <input tabIndex={-1} autoComplete="off" {...register("website")} />
             </div>
@@ -154,12 +180,12 @@ export function HeroForm() {
                 )}
               />
               <Label htmlFor="terms" className="text-xs leading-relaxed text-ink-700 font-normal">
-                Acepto los{" "}
-                <a href="#terminos" className="text-brand-700 underline-offset-2 hover:underline">
+                Leí y acepto los{" "}
+                <a href="/terminos" className="text-brand-700 underline-offset-2 hover:underline">
                   Términos y Condiciones
                 </a>{" "}
                 y la{" "}
-                <a href="#privacidad" className="text-brand-700 underline-offset-2 hover:underline">
+                <a href="/privacidad" className="text-brand-700 underline-offset-2 hover:underline">
                   Política de Privacidad
                 </a>
                 .
@@ -183,9 +209,13 @@ export function HeroForm() {
                 loading={isSubmitting}
                 disabled={!isValid || isSubmitting}
               >
-                CONSULTAR INFORME
+                SOLICITAR INFORME
                 <ArrowRight className="h-5 w-5" />
               </Button>
+              <p className="mt-2.5 flex items-center justify-center gap-1.5 text-[12px] text-ink-500">
+                <MapPin className="h-3.5 w-3.5 text-brand-700" />
+                Válido para toda la República Argentina
+              </p>
             </div>
 
             <div className="pt-3 border-t border-ink-300/60 mt-3">
@@ -208,6 +238,37 @@ export function HeroForm() {
 
       <CheckoutModal open={open} onOpenChange={setOpen} lead={lead} price={PRICE} />
     </>
+  );
+}
+
+function Field({
+  label,
+  hint,
+  error,
+  ok,
+  children,
+}: {
+  label: React.ReactNode;
+  hint?: string;
+  error?: string;
+  ok?: boolean;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="space-y-1.5">
+      <Label className="flex items-center justify-between">{label}</Label>
+      <div className="relative">
+        {children}
+        {ok && (
+          <CheckCircle2 className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-success" />
+        )}
+      </div>
+      {error ? (
+        <p className="text-xs text-danger">{error}</p>
+      ) : hint ? (
+        <p className="text-xs text-ink-500">{hint}</p>
+      ) : null}
+    </div>
   );
 }
 
