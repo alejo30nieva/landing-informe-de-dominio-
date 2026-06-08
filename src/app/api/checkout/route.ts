@@ -6,6 +6,7 @@ import { getSupabaseAdmin } from "@/lib/supabase";
 import { getPreferenceClient, INFORME_PRICE_ARS } from "@/lib/mercadopago";
 import { generateOrderId } from "@/lib/utils";
 import { rateLimit, getClientIp } from "@/lib/rateLimit";
+import { getServiceBySlug, DEFAULT_FORM_SERVICE } from "@/lib/services";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -49,8 +50,19 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  // Resolución del servicio desde el catálogo (single source of truth)
+  const service =
+    getServiceBySlug(parsed.data.serviceSlug) ??
+    getServiceBySlug(DEFAULT_FORM_SERVICE);
+  if (!service || !service.priceARS) {
+    return NextResponse.json(
+      { ok: false, error: "Servicio inválido" },
+      { status: 400 }
+    );
+  }
+
   const orderId = generateOrderId();
-  const amount = INFORME_PRICE_ARS;
+  const amount = service.priceARS ?? INFORME_PRICE_ARS;
   const { patente, email, telefono, cuit, method } = parsed.data;
 
   // 1) Persistimos lead (si está configurado Supabase). No bloqueamos si falla.
@@ -59,6 +71,8 @@ export async function POST(req: NextRequest) {
     const supa = getSupabaseAdmin();
     const { error } = await supa.from("leads").insert({
       order_id: orderId,
+      service_slug: service.slug,
+      service_title: service.title,
       patente,
       email,
       telefono,
@@ -76,18 +90,17 @@ export async function POST(req: NextRequest) {
   }
 
   // 2) Para transferencia / QR devolvemos datos bancarios.
-  //    QR usa la imagen estática (BANK_QR_URL) o el alias del CVU MP para que el cliente
-  //    transfiera y luego mande el comprobante por WhatsApp.
   if (method === "transferencia" || method === "qr") {
     return NextResponse.json({
       ok: true,
       orderId,
+      serviceTitle: service.title,
+      amount,
       titular: process.env.BANK_TITULAR ?? "Gestoría Córdoba",
       banco: process.env.BANK_NAME ?? "Mercado Pago",
       alias: process.env.BANK_ALIAS ?? "GESTORIA.CBA.MP",
       cbu: process.env.BANK_CBU ?? "0000003100012345678901",
       qrUrl: process.env.BANK_QR_URL ?? null,
-      amount,
     });
   }
 
@@ -103,8 +116,8 @@ export async function POST(req: NextRequest) {
         items: [
           {
             id: orderId,
-            title: `Informe de Dominio Automotor — ${patente}`,
-            description: "Informe oficial registral",
+            title: `${service.title} — ${patente}`,
+            description: service.shortDesc,
             quantity: 1,
             currency_id: "ARS",
             unit_price: amount,
@@ -121,7 +134,13 @@ export async function POST(req: NextRequest) {
         },
         auto_return: "approved",
         notification_url: `${baseUrl}/api/webhook/mercadopago`,
-        metadata: { order_id: orderId, patente, email, cuit: cuit || "" },
+        metadata: {
+          order_id: orderId,
+          service_slug: service.slug,
+          patente,
+          email,
+          cuit: cuit || "",
+        },
         payment_methods:
           method === "tarjeta"
             ? {
@@ -135,7 +154,6 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    // actualizar preference_id en Supabase (best-effort)
     if (supaSaved) {
       try {
         const supa = getSupabaseAdmin();
@@ -149,6 +167,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       ok: true,
       orderId,
+      serviceTitle: service.title,
+      amount,
       preferenceId: preference.id,
       initPoint:
         process.env.NODE_ENV === "production"

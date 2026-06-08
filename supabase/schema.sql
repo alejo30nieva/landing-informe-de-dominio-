@@ -7,6 +7,8 @@ create extension if not exists "uuid-ossp";
 create table if not exists public.leads (
   id uuid primary key default uuid_generate_v4(),
   order_id text not null unique,
+  service_slug text,
+  service_title text,
   patente text not null,
   email text not null,
   telefono text,
@@ -27,6 +29,7 @@ create table if not exists public.leads (
 
 create index if not exists leads_email_idx on public.leads (email);
 create index if not exists leads_telefono_idx on public.leads (telefono);
+create index if not exists leads_service_slug_idx on public.leads (service_slug);
 create index if not exists leads_status_idx on public.leads (status);
 create index if not exists leads_created_at_idx on public.leads (created_at desc);
 create index if not exists leads_payment_id_idx on public.leads (payment_id);

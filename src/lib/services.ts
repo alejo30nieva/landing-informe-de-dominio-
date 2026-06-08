@@ -14,12 +14,17 @@ export type Service = {
   category: "informes" | "transferencias" | "documentacion" | "tramites";
   featured?: boolean;
   hasSample?: boolean; // tiene mockup en /ejemplos
+  /** Si el cliente puede comprarlo directamente desde el formulario del hero. */
+  selectableInForm?: boolean;
+  /** Etiqueta corta para el selector (más compacto que el title). */
+  shortLabel?: string;
 };
 
 export const SERVICES: Service[] = [
   {
     slug: "informe-dominio",
     title: "Informe de Dominio Automotor",
+    shortLabel: "Dominio",
     shortDesc:
       "Estado legal y registral completo del vehículo: titular, deudas, embargos, inhibiciones.",
     longDesc:
@@ -30,10 +35,12 @@ export const SERVICES: Service[] = [
     category: "informes",
     featured: true,
     hasSample: true,
+    selectableInForm: true,
   },
   {
     slug: "informe-historico-titulares",
     title: "Informe Histórico de Titulares",
+    shortLabel: "Histórico",
     shortDesc:
       "Informe del vehículo con información registral y todos los titulares/dueños que tuvo.",
     longDesc:
@@ -44,10 +51,12 @@ export const SERVICES: Service[] = [
     category: "informes",
     featured: true,
     hasSample: true,
+    selectableInForm: true,
   },
   {
     slug: "informe-nominal",
     title: "Informe Nominal",
+    shortLabel: "Nominal",
     shortDesc:
       "Conocé qué vehículos figuran registrados a nombre de una persona en todo el país.",
     longDesc:
@@ -62,6 +71,7 @@ export const SERVICES: Service[] = [
   {
     slug: "informe-multas",
     title: "Informe de Multas",
+    shortLabel: "Multas",
     shortDesc:
       "Consulta de multas a nivel nacional en municipalidades, provincias y CABA.",
     longDesc:
@@ -72,10 +82,12 @@ export const SERVICES: Service[] = [
     category: "informes",
     featured: true,
     hasSample: true,
+    selectableInForm: true,
   },
   {
     slug: "informe-multas-express",
     title: "Informe de Multas EXPRESS",
+    shortLabel: "Multas Express",
     shortDesc:
       "Consulta de multas con prioridad. Se entrega en menos de 8 horas hábiles.",
     longDesc:
@@ -85,10 +97,12 @@ export const SERVICES: Service[] = [
     icon: "Zap",
     category: "informes",
     hasSample: true,
+    selectableInForm: true,
   },
   {
     slug: "informe-compra-segura",
     title: "Combo Compra Segura",
+    shortLabel: "Combo",
     shortDesc:
       "Dominio + Histórico de titulares + Multas. Todo lo que necesitás antes de comprar.",
     longDesc:
@@ -98,6 +112,7 @@ export const SERVICES: Service[] = [
     icon: "ShoppingCart",
     category: "informes",
     featured: true,
+    selectableInForm: true,
   },
 
   // Transferencias
@@ -247,3 +262,14 @@ export function formatPrice(s: Service): string | undefined {
   if (!s.priceARS) return undefined;
   return `$${s.priceARS.toLocaleString("es-AR")}`;
 }
+
+/**
+ * Servicios que pueden seleccionarse y comprarse desde el formulario del hero.
+ * Devueltos en el orden de prioridad de display.
+ */
+export function getFormSelectableServices(): Service[] {
+  return SERVICES.filter((s) => s.selectableInForm);
+}
+
+/** Slug por defecto del formulario. */
+export const DEFAULT_FORM_SERVICE = "informe-dominio";

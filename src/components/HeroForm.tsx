@@ -1,8 +1,8 @@
 "use client";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   CreditCard,
   QrCode,
@@ -11,6 +11,11 @@ import {
   ArrowRight,
   CheckCircle2,
   MapPin,
+  FileText,
+  Users,
+  Banknote,
+  Zap,
+  ShoppingCart,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -20,11 +25,24 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { leadSchema, type LeadInput } from "@/lib/validations";
 import { maskPatente, formatARS } from "@/lib/utils";
+import {
+  getFormSelectableServices,
+  getServiceBySlug,
+  DEFAULT_FORM_SERVICE,
+  type Service,
+} from "@/lib/services";
 import { CheckoutModal } from "@/components/CheckoutModal";
 
-const PRICE = Number(process.env.NEXT_PUBLIC_INFORME_PRICE ?? 6900);
+const ICONS: Record<string, any> = {
+  FileText,
+  Users,
+  Banknote,
+  Zap,
+  ShoppingCart,
+};
 
 export function HeroForm() {
+  const services = useMemo(() => getFormSelectableServices(), []);
   const [open, setOpen] = useState(false);
   const [lead, setLead] = useState<LeadInput | null>(null);
 
@@ -39,6 +57,7 @@ export function HeroForm() {
     resolver: zodResolver(leadSchema),
     mode: "onChange",
     defaultValues: {
+      serviceSlug: DEFAULT_FORM_SERVICE,
       patente: "",
       email: "",
       telefono: "",
@@ -49,6 +68,11 @@ export function HeroForm() {
   });
 
   const patente = watch("patente");
+  const selectedSlug = watch("serviceSlug") ?? DEFAULT_FORM_SERVICE;
+  const selectedService =
+    getServiceBySlug(selectedSlug) ?? services[0];
+  const price = selectedService.priceARS ?? 0;
+
   const showOk = (name: keyof LeadInput) =>
     !errors[name] && (touchedFields as any)[name] && (dirtyFields as any)[name];
 
@@ -71,20 +95,33 @@ export function HeroForm() {
         className="relative w-full max-w-md mx-auto lg:mx-0 lg:ml-auto"
       >
         <div className="absolute -inset-2 bg-gradient-to-br from-brand-700/15 to-transparent rounded-3xl blur-2xl -z-10" />
-        <div className="bg-white border border-ink-300 rounded-2xl shadow-elevate p-6 md:p-7">
-          <div className="flex items-center gap-2 mb-5">
+        <div className="bg-white border border-ink-300 rounded-2xl shadow-elevate p-5 md:p-6">
+          <div className="flex items-center gap-2 mb-4">
             <div className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-brand-50 text-brand-700">
               <ShieldCheck className="h-5 w-5" />
             </div>
             <div>
               <h3 className="font-semibold text-brand-950 leading-tight">
-                Consultá tu informe
+                Pedí tu informe online
               </h3>
               <p className="text-xs text-ink-500">100% online — pago seguro</p>
             </div>
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-3.5" noValidate>
+            {/* Selector de tipo de informe */}
+            <Controller
+              control={control}
+              name="serviceSlug"
+              render={({ field }) => (
+                <ServiceSelector
+                  services={services}
+                  value={field.value ?? DEFAULT_FORM_SERVICE}
+                  onChange={field.onChange}
+                />
+              )}
+            />
+
             <Field
               label="Patente del vehículo"
               error={errors.patente?.message}
@@ -145,7 +182,8 @@ export function HeroForm() {
             <Field
               label={
                 <>
-                  CUIT / CUIL <span className="text-xs font-normal text-ink-500">— opcional</span>
+                  CUIT / CUIL{" "}
+                  <span className="text-xs font-normal text-ink-500">— opcional</span>
                 </>
               }
               error={errors.cuit?.message}
@@ -182,7 +220,7 @@ export function HeroForm() {
               <Label htmlFor="terms" className="text-xs leading-relaxed text-ink-700 font-normal">
                 Leí y acepto los{" "}
                 <a href="/terminos" className="text-brand-700 underline-offset-2 hover:underline">
-                  Términos y Condiciones
+                  Términos
                 </a>{" "}
                 y la{" "}
                 <a href="/privacidad" className="text-brand-700 underline-offset-2 hover:underline">
@@ -196,12 +234,7 @@ export function HeroForm() {
             )}
 
             <div className="pt-2">
-              <div className="flex items-baseline justify-between mb-3">
-                <span className="text-sm text-ink-500">Costo del informe</span>
-                <span className="text-xl font-bold text-brand-950">
-                  {formatARS(PRICE)}
-                </span>
-              </div>
+              <PriceSummary service={selectedService} price={price} />
               <Button
                 type="submit"
                 size="xl"
@@ -236,8 +269,122 @@ export function HeroForm() {
         </div>
       </motion.div>
 
-      <CheckoutModal open={open} onOpenChange={setOpen} lead={lead} price={PRICE} />
+      <CheckoutModal
+        open={open}
+        onOpenChange={setOpen}
+        lead={lead}
+        service={selectedService}
+      />
     </>
+  );
+}
+
+function ServiceSelector({
+  services,
+  value,
+  onChange,
+}: {
+  services: Service[];
+  value: string;
+  onChange: (slug: string) => void;
+}) {
+  return (
+    <div>
+      <Label className="mb-2 block">Elegí tu informe</Label>
+      <div role="radiogroup" className="grid gap-2">
+        {services.map((s) => {
+          const Icon = ICONS[s.icon] ?? FileText;
+          const active = value === s.slug;
+          const isCombo = s.slug === "informe-compra-segura";
+          const isExpress = s.slug === "informe-multas-express";
+          return (
+            <button
+              key={s.slug}
+              type="button"
+              role="radio"
+              aria-checked={active}
+              onClick={() => onChange(s.slug)}
+              className={`relative w-full flex items-center gap-3 p-2.5 pl-3 rounded-xl border text-left transition-all ${
+                active
+                  ? "border-brand-700 bg-brand-50 shadow-soft"
+                  : "border-ink-300 bg-white hover:border-brand-700/40"
+              }`}
+            >
+              <span
+                className={`shrink-0 inline-flex h-9 w-9 items-center justify-center rounded-lg transition-colors ${
+                  active
+                    ? "bg-brand-700 text-white"
+                    : "bg-ink-100 text-brand-700"
+                }`}
+              >
+                <Icon className="h-4.5 w-4.5" />
+              </span>
+              <span className="flex-1 min-w-0">
+                <span className="flex items-center gap-1.5">
+                  <span className="font-semibold text-[13px] text-brand-950 truncate">
+                    {s.shortLabel ?? s.title}
+                  </span>
+                  {isCombo && (
+                    <span className="inline-flex items-center px-1.5 py-0.5 rounded bg-success text-white text-[9px] font-bold uppercase tracking-wider">
+                      Combo
+                    </span>
+                  )}
+                  {isExpress && (
+                    <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-warning text-white text-[9px] font-bold uppercase tracking-wider">
+                      <Zap className="h-2.5 w-2.5" /> Express
+                    </span>
+                  )}
+                </span>
+                <span className="block text-[11px] text-ink-500 mt-0.5 truncate">
+                  {s.delivery}
+                </span>
+              </span>
+              <span className="shrink-0 text-right">
+                <span className="block text-[14px] font-bold text-brand-950">
+                  {s.priceARS ? `$${s.priceARS.toLocaleString("es-AR")}` : "—"}
+                </span>
+                <span
+                  className={`mt-0.5 inline-flex items-center justify-center h-4 w-4 rounded-full border ${
+                    active
+                      ? "border-brand-700 bg-brand-700 text-white"
+                      : "border-ink-300 bg-white"
+                  }`}
+                >
+                  {active && <CheckCircle2 className="h-3.5 w-3.5" />}
+                </span>
+              </span>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function PriceSummary({ service, price }: { service: Service; price: number }) {
+  return (
+    <AnimatePresence mode="popLayout">
+      <motion.div
+        key={service.slug}
+        initial={{ opacity: 0, y: 6 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -6 }}
+        transition={{ duration: 0.18 }}
+        className="flex items-center justify-between gap-3 mb-3 p-3 rounded-lg bg-ink-100 border border-ink-300/60"
+      >
+        <div className="min-w-0">
+          <div className="text-[11px] uppercase tracking-widest font-semibold text-ink-500">
+            A pagar
+          </div>
+          <div className="text-sm font-semibold text-brand-950 truncate">
+            {service.title}
+          </div>
+        </div>
+        <div className="text-2xl font-extrabold text-brand-950 whitespace-nowrap">
+          {formatARS(price)}
+        </div>
+      </motion.div>
+    </AnimatePresence>
   );
 }
 

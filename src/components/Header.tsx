@@ -7,11 +7,11 @@ import { cn } from "@/lib/utils";
 
 const links = [
   { href: "/#inicio", label: "Inicio" },
+  { href: "/#informes", label: "Informes" },
   { href: "/#que-es", label: "¿Qué es?" },
-  { href: "/servicios", label: "Servicios" },
+  { href: "/servicios", label: "Gestoría" },
   { href: "/ejemplos", label: "Ejemplos" },
-  { href: "/#faq", label: "Preguntas Frecuentes" },
-  { href: "/#contacto", label: "Contacto" },
+  { href: "/#faq", label: "FAQ" },
 ];
 
 export function Header() {

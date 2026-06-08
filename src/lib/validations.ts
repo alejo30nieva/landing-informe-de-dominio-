@@ -3,6 +3,10 @@ import { z } from "zod";
 const patenteRegex = /^([A-Z]{3}\d{3}|[A-Z]{2}\d{3}[A-Z]{2})$/;
 
 export const leadSchema = z.object({
+  serviceSlug: z
+    .string()
+    .min(1, "Elegí qué informe necesitás")
+    .max(60),
   patente: z
     .string()
     .min(6, "La patente debe tener al menos 6 caracteres")

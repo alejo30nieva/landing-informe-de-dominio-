@@ -26,6 +26,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { formatARS } from "@/lib/utils";
 import type { LeadInput } from "@/lib/validations";
+import type { Service } from "@/lib/services";
 
 type Method = "transferencia" | "qr" | "mercadopago" | "tarjeta";
 
@@ -41,12 +42,15 @@ type Props = {
   open: boolean;
   onOpenChange: (v: boolean) => void;
   lead: LeadInput | null;
-  price: number;
+  /** Servicio que el cliente eligió en el form. */
+  service: Service;
 };
 
 type CheckoutResp = {
   ok: boolean;
   orderId?: string;
+  serviceTitle?: string;
+  amount?: number;
   initPoint?: string;
   preferenceId?: string;
   qrBase64?: string;
@@ -55,11 +59,11 @@ type CheckoutResp = {
   cbu?: string;
   titular?: string;
   banco?: string;
-  amount?: number;
   error?: string;
 };
 
-export function CheckoutModal({ open, onOpenChange, lead, price }: Props) {
+export function CheckoutModal({ open, onOpenChange, lead, service }: Props) {
+  const price = service.priceARS ?? 0;
   const [method, setMethod] = useState<Method>("transferencia");
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<CheckoutResp | null>(null);
@@ -107,7 +111,7 @@ export function CheckoutModal({ open, onOpenChange, lead, price }: Props) {
     () => (
       <div className="rounded-xl border border-ink-300 bg-ink-100/60 p-4 space-y-1.5">
         <div className="flex items-center justify-between text-sm">
-          <span className="text-ink-700">Informe de Dominio</span>
+          <span className="text-ink-700 font-medium">{service.title}</span>
           <span className="font-semibold text-brand-950">{formatARS(price)}</span>
         </div>
         {lead?.patente && (
@@ -128,7 +132,7 @@ export function CheckoutModal({ open, onOpenChange, lead, price }: Props) {
         </div>
       </div>
     ),
-    [lead, price]
+    [lead, price, service.title]
   );
 
   return (
