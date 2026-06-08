@@ -106,6 +106,7 @@ export function Footer() {
                 { href: "/", label: "Inicio" },
                 { href: "/#que-es", label: "¿Qué es el informe?" },
                 { href: "/servicios", label: "Servicios" },
+                { href: "/ejemplos", label: "Ejemplos de informes" },
                 { href: "/#faq", label: "Preguntas frecuentes" },
                 { href: "/#formulario", label: "Consultar informe" },
               ].map((l) => (

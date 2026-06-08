@@ -8,11 +8,12 @@ export type Service = {
   title: string;
   shortDesc: string;
   longDesc: string;
-  price?: string;
+  priceARS?: number;
   delivery: string;
   icon: string; // nombre de ícono Lucide
   category: "informes" | "transferencias" | "documentacion" | "tramites";
   featured?: boolean;
+  hasSample?: boolean; // tiene mockup en /ejemplos
 };
 
 export const SERVICES: Service[] = [
@@ -22,13 +23,84 @@ export const SERVICES: Service[] = [
     shortDesc:
       "Estado legal y registral completo del vehículo: titular, deudas, embargos, inhibiciones.",
     longDesc:
-      "Documento oficial obtenido del Registro Nacional de la Propiedad del Automotor. Imprescindible antes de comprar un usado.",
-    price: "Desde $6.900",
+      "Documento oficial del Registro Nacional de la Propiedad del Automotor. Imprescindible antes de comprar un usado.",
+    priceARS: 9900,
     delivery: "10–15 minutos",
     icon: "FileText",
     category: "informes",
     featured: true,
+    hasSample: true,
   },
+  {
+    slug: "informe-historico-titulares",
+    title: "Informe Histórico de Titulares",
+    shortDesc:
+      "Informe del vehículo con información registral y todos los titulares/dueños que tuvo.",
+    longDesc:
+      "Documento DNRPA con la trazabilidad completa: titular actual, titulares anteriores, datos de inscripción, prendas, inhibiciones y radicaciones previas.",
+    priceARS: 13900,
+    delivery: "10–20 minutos",
+    icon: "Users",
+    category: "informes",
+    featured: true,
+    hasSample: true,
+  },
+  {
+    slug: "informe-nominal",
+    title: "Informe Nominal",
+    shortDesc:
+      "Conocé qué vehículos figuran registrados a nombre de una persona en todo el país.",
+    longDesc:
+      "Búsqueda nacional cruzada por DNI o CUIT/CUIL. Útil para sucesiones, divorcios, juicios o auditorías patrimoniales.",
+    priceARS: 10500,
+    delivery: "15–30 minutos",
+    icon: "UserSearch",
+    category: "informes",
+    featured: true,
+    hasSample: true,
+  },
+  {
+    slug: "informe-multas",
+    title: "Informe de Multas",
+    shortDesc:
+      "Consulta de multas a nivel nacional en municipalidades, provincias y CABA.",
+    longDesc:
+      "Sistema Unificado de Administraciones Tributarias Subnacionales (SUATS). Detalle por jurisdicción, fecha, lugar, código de infracción e importe.",
+    priceARS: 17200,
+    delivery: "20–40 minutos",
+    icon: "Banknote",
+    category: "informes",
+    featured: true,
+    hasSample: true,
+  },
+  {
+    slug: "informe-multas-express",
+    title: "Informe de Multas EXPRESS",
+    shortDesc:
+      "Consulta de multas con prioridad. Se entrega en menos de 8 horas hábiles.",
+    longDesc:
+      "Igual que el Informe de Multas pero con prioridad en la cola. Puede estar listo mucho antes según disponibilidad del sistema.",
+    priceARS: 22600,
+    delivery: "Hasta 8 hs hábiles",
+    icon: "Zap",
+    category: "informes",
+    hasSample: true,
+  },
+  {
+    slug: "informe-compra-segura",
+    title: "Combo Compra Segura",
+    shortDesc:
+      "Dominio + Histórico de titulares + Multas. Todo lo que necesitás antes de comprar.",
+    longDesc:
+      "Paquete combinado con descuento: incluye Informe de Dominio, Histórico de Titulares e Informe de Multas a nivel nacional.",
+    priceARS: 34900,
+    delivery: "30–60 minutos",
+    icon: "ShoppingCart",
+    category: "informes",
+    featured: true,
+  },
+
+  // Transferencias
   {
     slug: "transferencia",
     title: "Transferencia de Automotor",
@@ -39,8 +111,44 @@ export const SERVICES: Service[] = [
     delivery: "5 a 15 días hábiles",
     icon: "RefreshCcw",
     category: "transferencias",
-    featured: true,
   },
+  {
+    slug: "patentamiento-0km",
+    title: "Patentamiento 0 km",
+    shortDesc:
+      "Inscripción inicial de vehículo cero kilómetro ante el Registro.",
+    longDesc:
+      "Tramitamos la inscripción inicial, alta de patente, cédula verde y placas.",
+    delivery: "5 a 20 días",
+    icon: "Car",
+    category: "transferencias",
+  },
+
+  // Documentación
+  {
+    slug: "cedula-azul",
+    title: "Cédula Azul (autorización a conducir)",
+    shortDesc:
+      "Autorización oficial para que un tercero conduzca tu vehículo.",
+    longDesc:
+      "Tramitamos cédula para cónyuge, hijos, empleados o quien autorices.",
+    delivery: "3 a 10 días hábiles",
+    icon: "BadgeCheck",
+    category: "documentacion",
+  },
+  {
+    slug: "duplicado-cedula",
+    title: "Duplicado / Triplicado de Cédula",
+    shortDesc:
+      "Reposición de cédula verde por extravío, robo o deterioro.",
+    longDesc:
+      "Gestionamos el formulario 02 y retirada de la nueva cédula.",
+    delivery: "5 a 15 días hábiles",
+    icon: "FileCheck2",
+    category: "documentacion",
+  },
+
+  // Trámites
   {
     slug: "cambio-radicacion",
     title: "Cambio de Radicación",
@@ -65,39 +173,6 @@ export const SERVICES: Service[] = [
     featured: true,
   },
   {
-    slug: "cedula-azul",
-    title: "Cédula Azul (autorización a conducir)",
-    shortDesc:
-      "Autorización oficial para que un tercero conduzca tu vehículo.",
-    longDesc:
-      "Tramitamos cédula para cónyuge, hijos, empleados o quien autorices.",
-    delivery: "3 a 10 días hábiles",
-    icon: "BadgeCheck",
-    category: "documentacion",
-  },
-  {
-    slug: "duplicado-cedula",
-    title: "Duplicado / Triplicado de Cédula",
-    shortDesc:
-      "Reposición de cédula verde por extravío, robo o deterioro.",
-    longDesc:
-      "Gestionamos el formulario 02 y retirada de la nueva cédula.",
-    delivery: "5 a 15 días hábiles",
-    icon: "FileCheck2",
-    category: "documentacion",
-  },
-  {
-    slug: "patentamiento-0km",
-    title: "Patentamiento 0 km",
-    shortDesc:
-      "Inscripción inicial de vehículo cero kilómetro ante el Registro.",
-    longDesc:
-      "Tramitamos la inscripción inicial, alta de patente, cédula verde y placas.",
-    delivery: "5 a 20 días",
-    icon: "Car",
-    category: "transferencias",
-  },
-  {
     slug: "baja-automotor",
     title: "Baja del Automotor",
     shortDesc:
@@ -107,41 +182,6 @@ export const SERVICES: Service[] = [
     delivery: "10 a 30 días",
     icon: "Trash2",
     category: "tramites",
-  },
-  {
-    slug: "informe-historico-titulares",
-    title: "Histórico de Titulares",
-    shortDesc:
-      "Listado completo de todos los titulares que tuvo el vehículo.",
-    longDesc:
-      "Ideal para verificar la trazabilidad antes de comprar un usado de varios dueños.",
-    price: "Desde $5.900",
-    delivery: "15 a 30 minutos",
-    icon: "Users",
-    category: "informes",
-  },
-  {
-    slug: "informe-deudas-multas",
-    title: "Multas y Patentes Adeudadas",
-    shortDesc:
-      "Verificación de deudas de patente y multas vigentes en todo el país.",
-    longDesc:
-      "Buscamos en jurisdicciones provinciales y municipales asociadas al dominio.",
-    price: "Desde $4.900",
-    delivery: "10 a 20 minutos",
-    icon: "Banknote",
-    category: "informes",
-  },
-  {
-    slug: "informe-embargos",
-    title: "Embargos e Inhibiciones",
-    shortDesc:
-      "Detectamos restricciones judiciales que impiden la transferencia.",
-    longDesc:
-      "Consulta directa al Registro Nacional para detectar cualquier medida cautelar.",
-    delivery: "10 a 15 minutos",
-    icon: "Gavel",
-    category: "informes",
   },
   {
     slug: "verificacion-policial",
@@ -183,23 +223,10 @@ export const SERVICES: Service[] = [
       "Valuación oficial del vehículo para seguros, sucesiones o trámites.",
     longDesc:
       "Certificado de valuación según tabla oficial del Registro y AFIP.",
-    price: "Desde $3.900",
+    priceARS: 4900,
     delivery: "Mismo día",
     icon: "Calculator",
     category: "informes",
-  },
-  {
-    slug: "informe-compra-segura",
-    title: "Informe para Compra Segura",
-    shortDesc:
-      "Paquete completo: dominio + deudas + embargos + histórico de titulares.",
-    longDesc:
-      "Recomendado antes de cualquier compra. Incluye asesoramiento por WhatsApp.",
-    price: "Desde $9.900",
-    delivery: "15 a 25 minutos",
-    icon: "ShoppingCart",
-    category: "informes",
-    featured: true,
   },
 ];
 
@@ -208,8 +235,15 @@ export function getServiceBySlug(slug: string) {
 }
 
 export function buildWaUrl(service: Service): string {
-  const phone =
-    process.env.NEXT_PUBLIC_WA_PHONE ?? "5493515724733";
-  const msg = `Hola! Quería consultar por el servicio: ${service.title}.`;
+  const phone = process.env.NEXT_PUBLIC_WA_PHONE ?? "5493515724733";
+  const priceLine = service.priceARS
+    ? ` (precio: $${service.priceARS.toLocaleString("es-AR")})`
+    : "";
+  const msg = `Hola! Quería consultar por el servicio: ${service.title}${priceLine}.`;
   return `https://wa.me/${phone.replace(/\D/g, "")}?text=${encodeURIComponent(msg)}`;
+}
+
+export function formatPrice(s: Service): string | undefined {
+  if (!s.priceARS) return undefined;
+  return `$${s.priceARS.toLocaleString("es-AR")}`;
 }

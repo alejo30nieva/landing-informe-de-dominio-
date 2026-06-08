@@ -9,6 +9,7 @@ import {
   Car,
   Trash2,
   Users,
+  UserSearch,
   Banknote,
   Gavel,
   ScanSearch,
@@ -20,14 +21,17 @@ import {
   MessageCircle,
   CheckCircle2,
   ArrowRight,
+  Zap,
+  Eye,
 } from "lucide-react";
+import Link from "next/link";
 
 import { TopBar } from "@/components/TopBar";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { WhatsAppButton } from "@/components/WhatsAppButton";
 import { Button } from "@/components/ui/button";
-import { SERVICES, buildWaUrl, type Service } from "@/lib/services";
+import { SERVICES, buildWaUrl, formatPrice, type Service } from "@/lib/services";
 
 const ICONS: Record<string, any> = {
   FileText,
@@ -39,6 +43,7 @@ const ICONS: Record<string, any> = {
   Car,
   Trash2,
   Users,
+  UserSearch,
   Banknote,
   Gavel,
   ScanSearch,
@@ -46,6 +51,7 @@ const ICONS: Record<string, any> = {
   Palette,
   Calculator,
   ShoppingCart,
+  Zap,
 };
 
 export const metadata: Metadata = {
@@ -175,6 +181,7 @@ function ServiceCard({
   highlighted?: boolean;
 }) {
   const Icon = ICONS[service.icon] ?? FileText;
+  const price = formatPrice(service);
   return (
     <div
       className={`group relative flex flex-col rounded-2xl border bg-white p-6 transition-all ${
@@ -192,9 +199,9 @@ function ServiceCard({
         <div className="inline-flex h-11 w-11 items-center justify-center rounded-lg bg-brand-50 text-brand-700 group-hover:bg-brand-700 group-hover:text-white transition-colors">
           <Icon className="h-5 w-5" />
         </div>
-        {service.price && (
-          <span className="text-[11px] font-semibold text-brand-700 bg-brand-50 px-2 py-1 rounded">
-            {service.price}
+        {price && (
+          <span className="text-[12px] font-bold text-brand-700 bg-brand-50 px-2.5 py-1 rounded-md whitespace-nowrap">
+            {price}
           </span>
         )}
       </div>
@@ -206,16 +213,27 @@ function ServiceCard({
         <Clock className="h-3.5 w-3.5" />
         {service.delivery}
       </div>
-      <a
-        href={buildWaUrl(service)}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="mt-4 inline-flex items-center justify-center gap-2 w-full h-11 rounded-lg bg-[#25D366] hover:bg-[#1ebe5b] text-white font-semibold text-sm transition-colors"
-      >
-        <MessageCircle className="h-4 w-4" />
-        Consultar por WhatsApp
-        <ArrowRight className="h-4 w-4" />
-      </a>
+      <div className="mt-4 flex flex-col gap-2">
+        <a
+          href={buildWaUrl(service)}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center justify-center gap-2 w-full h-11 rounded-lg bg-[#25D366] hover:bg-[#1ebe5b] text-white font-semibold text-sm transition-colors"
+        >
+          <MessageCircle className="h-4 w-4" />
+          Consultar por WhatsApp
+          <ArrowRight className="h-4 w-4" />
+        </a>
+        {service.hasSample && (
+          <Link
+            href={`/ejemplos#${service.slug}`}
+            className="inline-flex items-center justify-center gap-1.5 w-full h-9 rounded-lg border border-ink-300 text-brand-700 hover:bg-brand-50 font-medium text-xs transition-colors"
+          >
+            <Eye className="h-3.5 w-3.5" />
+            Ver ejemplo de informe
+          </Link>
+        )}
+      </div>
     </div>
   );
 }
