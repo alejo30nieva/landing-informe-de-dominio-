@@ -1,0 +1,73 @@
+import { NextRequest, NextResponse } from "next/server";
+import { getPreferenceClient, isMpConfigured, isMpInTestMode } from "@/lib/mercadopago";
+
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
+/**
+ * Health check de la integración con Mercado Pago.
+ *
+ * GET /api/health/mp
+ *  -> Verifica si MP_ACCESS_TOKEN está seteado y si el token funciona
+ *     (crea una preferencia de prueba con monto $10 y la borra del response).
+ *
+ * Para ejecutar manualmente en producción agregá ?key=<MP_HEALTH_KEY>
+ * (cualquier valor que coincida con la env). Si la env no existe el endpoint
+ * queda abierto (útil para chequeo desde Vercel deploy).
+ */
+export async function GET(req: NextRequest) {
+  const expectedKey = process.env.MP_HEALTH_KEY;
+  const providedKey = req.nextUrl.searchParams.get("key");
+  if (expectedKey && providedKey !== expectedKey) {
+    return NextResponse.json({ ok: false, error: "unauthorized" }, { status: 401 });
+  }
+
+  const checks: Record<string, any> = {
+    mpConfigured: isMpConfigured(),
+    testMode: isMpInTestMode(),
+    publicBaseUrl: process.env.NEXT_PUBLIC_BASE_URL ?? null,
+    webhookSignatureSecretSet: Boolean(process.env.MP_WEBHOOK_SECRET),
+    supabaseSet: Boolean(process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY),
+  };
+
+  if (!checks.mpConfigured) {
+    return NextResponse.json({
+      ok: false,
+      error: "MP_ACCESS_TOKEN no configurado",
+      checks,
+    });
+  }
+
+  // Probar creación de preferencia ($10 ARS para no gastar nada)
+  try {
+    const pref = getPreferenceClient();
+    const test = await pref.create({
+      body: {
+        items: [
+          {
+            id: "healthcheck",
+            title: "Healthcheck",
+            quantity: 1,
+            currency_id: "ARS",
+            unit_price: 10,
+          },
+        ],
+        external_reference: "HEALTHCHECK",
+      },
+    });
+    checks.preferenceCreated = Boolean(test.id);
+    checks.preferenceId = test.id;
+    checks.initPoint = test.init_point;
+    checks.sandboxInitPoint = test.sandbox_init_point ?? null;
+    return NextResponse.json({ ok: true, checks });
+  } catch (e: any) {
+    return NextResponse.json(
+      {
+        ok: false,
+        error: e?.message ?? "mp_test_failed",
+        checks,
+      },
+      { status: 500 }
+    );
+  }
+}

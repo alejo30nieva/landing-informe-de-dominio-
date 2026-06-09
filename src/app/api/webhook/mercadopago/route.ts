@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { createHmac, timingSafeEqual } from "node:crypto";
+
 import { getPaymentClient } from "@/lib/mercadopago";
 import { getSupabaseAdmin } from "@/lib/supabase";
 import { notifyEmail, notifyWhatsApp } from "@/lib/notify";
@@ -7,88 +9,181 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 /**
- * Webhook IPN/Webhooks de MercadoPago.
- * Acepta el formato nuevo (topic=payment, id=...) y el viejo (type=payment).
+ * Webhook de Mercado Pago — eventos `payment`.
+ *
+ * Soporta:
+ *  - Validación HMAC de la firma x-signature (recomendado por MP).
+ *  - Formato nuevo (type=payment, data.id) y viejo (topic=payment, id).
+ *  - Idempotencia: si ya marcamos el pago como approved/rejected y vuelve a
+ *    llegar el mismo evento, no re-notificamos.
+ *  - Retesteos HEAD/GET de MP devuelven 200 OK.
+ *
+ * Docs:
+ *  https://www.mercadopago.com.ar/developers/es/docs/your-integrations/notifications/webhooks
  */
 export async function POST(req: NextRequest) {
+  // Tomamos el raw body para verificar la firma (el SDK lo necesita textual).
+  const rawBody = await req.text();
   let body: any = null;
   try {
-    body = await req.json();
+    body = rawBody ? JSON.parse(rawBody) : null;
   } catch {
     body = null;
   }
+
   const url = req.nextUrl;
   const topic = body?.type ?? body?.topic ?? url.searchParams.get("topic");
-  const id =
+  const dataId =
     body?.data?.id ??
     body?.id ??
     url.searchParams.get("id") ??
     url.searchParams.get("data.id");
 
-  // MP retesta el webhook con HEAD/GET — devolvemos 200 sin procesar.
-  if (!topic || topic !== "payment" || !id) {
+  // 1) Validación de firma (opcional pero recomendada).
+  //    Si no está configurada la secret, se omite (compatibilidad con dev).
+  const secret = process.env.MP_WEBHOOK_SECRET;
+  if (secret) {
+    const signatureOk = verifyMpSignature({
+      secret,
+      xSignature: req.headers.get("x-signature"),
+      xRequestId: req.headers.get("x-request-id"),
+      dataId: String(dataId ?? ""),
+    });
+    if (!signatureOk) {
+      console.warn("[mp-webhook] firma inválida — request rechazado");
+      return NextResponse.json({ ok: false, error: "invalid_signature" }, { status: 401 });
+    }
+  }
+
+  // 2) Eventos que NO son payment los ignoramos con 200 (MP los reenviaría sino).
+  if (!topic || topic !== "payment" || !dataId) {
     return NextResponse.json({ ok: true, ignored: true });
   }
 
+  // 3) Consultamos el pago en MP (single source of truth).
+  let payment: any;
   try {
     const payments = getPaymentClient();
-    const payment = await payments.get({ id: String(id) });
-
-    const orderId = (payment.external_reference as string) || "";
-    const status = String(payment.status ?? "pending") as
-      | "approved"
-      | "pending"
-      | "in_process"
-      | "rejected"
-      | "cancelled";
-
-    // Persistir en Supabase
-    try {
-      const supa = getSupabaseAdmin();
-      const update: Record<string, any> = {
-        status,
-        payment_id: String(payment.id),
-        payment_method: payment.payment_method_id ?? null,
-        updated_at: new Date().toISOString(),
-      };
-      if (orderId) {
-        await supa.from("leads").update(update).eq("order_id", orderId);
-      } else {
-        await supa.from("leads").update(update).eq("payment_id", String(payment.id));
-      }
-    } catch (e) {
-      console.warn("[webhook] supabase update fallido:", (e as Error).message);
-    }
-
-    // Notificaciones si quedó aprobado
-    if (status === "approved") {
-      const email = (payment.payer as any)?.email as string | undefined;
-      if (email) {
-        await notifyEmail({
-          to: email,
-          subject: `Tu pago fue aprobado — Orden ${orderId}`,
-          html: emailTemplate(orderId, payment.transaction_amount ?? 0),
-        });
-      }
-      const adminPhone = process.env.ADMIN_WHATSAPP_PHONE;
-      if (adminPhone) {
-        await notifyWhatsApp({
-          to: adminPhone,
-          body: `✅ Pago aprobado\nOrden: ${orderId}\nMonto: $${payment.transaction_amount}\nEmail: ${email}`,
-        });
-      }
-    }
-
-    return NextResponse.json({ ok: true });
+    payment = await payments.get({ id: String(dataId) });
   } catch (e: any) {
-    console.error("[webhook] error:", e?.message);
-    // Devolvemos 200 para que MP no reintente indefinidamente si el error es nuestro.
-    return NextResponse.json({ ok: false, error: e?.message ?? "error" });
+    console.error("[mp-webhook] error consultando MP:", e?.message);
+    // 200 para que MP no reintente indefinidamente
+    return NextResponse.json({ ok: false, error: "mp_fetch_failed" });
   }
+
+  const orderId = String(payment.external_reference ?? "");
+  const status = String(payment.status ?? "pending") as
+    | "approved"
+    | "pending"
+    | "in_process"
+    | "rejected"
+    | "cancelled";
+
+  // 4) Idempotencia: si ya estaba en este mismo estado terminal, no re-notificamos.
+  let previousStatus: string | null = null;
+  try {
+    const supa = getSupabaseAdmin();
+    if (orderId) {
+      const { data } = await supa
+        .from("leads")
+        .select("status")
+        .eq("order_id", orderId)
+        .maybeSingle();
+      previousStatus = data?.status ?? null;
+    }
+  } catch (e) {
+    console.warn("[mp-webhook] no se pudo leer estado previo:", (e as Error).message);
+  }
+
+  // 5) Persistir update (best-effort).
+  try {
+    const supa = getSupabaseAdmin();
+    const update: Record<string, any> = {
+      status,
+      payment_id: String(payment.id),
+      payment_method: payment.payment_method_id ?? null,
+      updated_at: new Date().toISOString(),
+    };
+    if (orderId) {
+      await supa.from("leads").update(update).eq("order_id", orderId);
+    } else {
+      await supa.from("leads").update(update).eq("payment_id", String(payment.id));
+    }
+  } catch (e) {
+    console.warn("[mp-webhook] supabase update fallido:", (e as Error).message);
+  }
+
+  // 6) Notificar SOLO si el estado cambió a uno terminal nuevo.
+  const isNewlyApproved =
+    status === "approved" && previousStatus !== "approved";
+
+  if (isNewlyApproved) {
+    const email = (payment.payer as any)?.email as string | undefined;
+    if (email) {
+      await notifyEmail({
+        to: email,
+        subject: `Tu pago fue aprobado — Orden ${orderId}`,
+        html: emailTemplate(orderId, payment.transaction_amount ?? 0),
+      });
+    }
+    const adminPhone = process.env.ADMIN_WHATSAPP_PHONE;
+    if (adminPhone) {
+      await notifyWhatsApp({
+        to: adminPhone,
+        body: `✅ Pago aprobado\nOrden: ${orderId}\nMonto: $${payment.transaction_amount}\nEmail: ${email}`,
+      });
+    }
+  }
+
+  return NextResponse.json({ ok: true, status, idempotent: !isNewlyApproved && status === "approved" });
 }
 
 export async function GET() {
   return NextResponse.json({ ok: true });
+}
+
+/**
+ * Verifica la firma HMAC SHA-256 que MP manda en `x-signature`.
+ *
+ * Formato del header:
+ *   ts=<timestamp>,v1=<hex_hash>
+ *
+ * Manifest a firmar:
+ *   id:<data.id>;request-id:<x-request-id>;ts:<ts>;
+ *
+ * (Tomado de: developers MP → Webhooks → Validar el origen de la notificación)
+ */
+function verifyMpSignature(opts: {
+  secret: string;
+  xSignature: string | null;
+  xRequestId: string | null;
+  dataId: string;
+}): boolean {
+  const { secret, xSignature, xRequestId, dataId } = opts;
+  if (!xSignature || !dataId) return false;
+
+  // Parse "ts=...,v1=..."
+  const parts = Object.fromEntries(
+    xSignature
+      .split(",")
+      .map((p) => p.trim().split("="))
+      .filter((kv) => kv.length === 2)
+  ) as Record<string, string>;
+
+  const ts = parts.ts;
+  const v1 = parts.v1;
+  if (!ts || !v1) return false;
+
+  const manifest = `id:${dataId};request-id:${xRequestId ?? ""};ts:${ts};`;
+  const expected = createHmac("sha256", secret).update(manifest).digest("hex");
+
+  // timingSafeEqual requiere mismo length
+  if (expected.length !== v1.length) return false;
+  try {
+    return timingSafeEqual(Buffer.from(expected, "hex"), Buffer.from(v1, "hex"));
+  } catch {
+    return false;
+  }
 }
 
 function emailTemplate(orderId: string, amount: number) {
@@ -102,7 +197,7 @@ function emailTemplate(orderId: string, amount: number) {
     <div style="padding:24px">
       <h1 style="margin:0 0 8px;font-size:20px">¡Pago aprobado!</h1>
       <p style="color:#374151;font-size:14px;line-height:1.5">
-        Recibimos tu pago correctamente. Estamos procesando tu Informe de Dominio
+        Recibimos tu pago correctamente. Estamos procesando tu Informe
         y te lo enviaremos a este mismo email en los próximos minutos.
       </p>
       <div style="margin-top:16px;padding:14px;border-radius:10px;background:#F2F6FF;border:1px solid #E8EFFE">

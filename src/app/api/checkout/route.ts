@@ -3,7 +3,11 @@ import { z } from "zod";
 
 import { leadSchema } from "@/lib/validations";
 import { getSupabaseAdmin } from "@/lib/supabase";
-import { getPreferenceClient, INFORME_PRICE_ARS } from "@/lib/mercadopago";
+import {
+  getPreferenceClient,
+  INFORME_PRICE_ARS,
+  isMpConfigured,
+} from "@/lib/mercadopago";
 import { generateOrderId } from "@/lib/utils";
 import { rateLimit, getClientIp } from "@/lib/rateLimit";
 import { getServiceBySlug, DEFAULT_FORM_SERVICE } from "@/lib/services";
@@ -105,6 +109,18 @@ export async function POST(req: NextRequest) {
   }
 
   // 3) MercadoPago (preferencia + redirect)
+  if (!isMpConfigured()) {
+    return NextResponse.json(
+      {
+        ok: false,
+        orderId,
+        error:
+          "MercadoPago aún no está configurado. Usá transferencia o QR mientras tanto.",
+      },
+      { status: 503 }
+    );
+  }
+
   try {
     const pref = getPreferenceClient();
     const baseUrl =
@@ -152,6 +168,9 @@ export async function POST(req: NextRequest) {
               }
             : { installments: 12 },
       },
+      // Idempotency-Key evita que el cliente recree la preferencia
+      // si el request se duplica por refresh / red lenta / retry.
+      requestOptions: { idempotencyKey: orderId },
     });
 
     if (supaSaved) {
