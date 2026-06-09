@@ -197,7 +197,7 @@ export function PricingTable() {
                 <div className="mt-5 flex flex-col gap-2">
                   {s.selectableInForm ? (
                     <Button asChild size="md" className="w-full">
-                      <a href={`#formulario?service=${s.slug}`}>
+                      <a href={`/?s=${s.slug}#formulario`}>
                         Solicitar
                         <ArrowRight className="h-4 w-4" />
                       </a>

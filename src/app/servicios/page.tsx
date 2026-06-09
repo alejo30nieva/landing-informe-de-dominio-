@@ -293,7 +293,7 @@ function InformeCard({ service }: { service: Service }) {
       <div className="mt-5 flex flex-col gap-2">
         {service.selectableInForm ? (
           <Button asChild size="md" className="w-full">
-            <a href={`/#formulario`}>
+            <a href={`/?s=${service.slug}#formulario`}>
               Comprar online
               <ArrowRight className="h-4 w-4" />
             </a>

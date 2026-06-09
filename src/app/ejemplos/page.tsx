@@ -227,12 +227,21 @@ function SampleSectionBlock({
               </div>
 
               <div className="mt-5 flex flex-col gap-2">
-                <Button asChild size="lg" className="w-full">
-                  <Link href="/#formulario">
-                    Solicitar ahora
-                    <ArrowRight className="h-4 w-4" />
-                  </Link>
-                </Button>
+                {service.selectableInForm ? (
+                  <Button asChild size="lg" className="w-full">
+                    <Link href={`/?s=${service.slug}#formulario`}>
+                      Solicitar ahora
+                      <ArrowRight className="h-4 w-4" />
+                    </Link>
+                  </Button>
+                ) : (
+                  <Button asChild size="lg" className="w-full">
+                    <a href={wa} target="_blank" rel="noopener noreferrer">
+                      <MessageCircle className="h-4 w-4" />
+                      Consultar precio
+                    </a>
+                  </Button>
+                )}
                 <Button asChild size="lg" variant="outline" className="w-full">
                   <a href={wa} target="_blank" rel="noopener noreferrer">
                     <MessageCircle className="h-4 w-4" />

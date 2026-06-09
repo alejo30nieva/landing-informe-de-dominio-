@@ -1,5 +1,5 @@
 "use client";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion, AnimatePresence } from "framer-motion";
@@ -11,11 +11,6 @@ import {
   ArrowRight,
   CheckCircle2,
   MapPin,
-  FileText,
-  Users,
-  Banknote,
-  Zap,
-  ShoppingCart,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -23,6 +18,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
+import { ServicePicker } from "@/components/ServicePicker";
 import { leadSchema, type LeadInput } from "@/lib/validations";
 import { maskPatente, formatARS } from "@/lib/utils";
 import {
@@ -32,14 +28,6 @@ import {
   type Service,
 } from "@/lib/services";
 import { CheckoutModal } from "@/components/CheckoutModal";
-
-const ICONS: Record<string, any> = {
-  FileText,
-  Users,
-  Banknote,
-  Zap,
-  ShoppingCart,
-};
 
 export function HeroForm() {
   const services = useMemo(() => getFormSelectableServices(), []);
@@ -76,6 +64,25 @@ export function HeroForm() {
   const showOk = (name: keyof LeadInput) =>
     !errors[name] && (touchedFields as any)[name] && (dirtyFields as any)[name];
 
+  // Deep linking: ?s=<slug> en la URL → pre-selecciona ese informe + scroll al form.
+  // Soporta los siguientes orígenes: PricingTable, /servicios, /ejemplos.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    const slug = params.get("s");
+    if (!slug) return;
+    const svc = getServiceBySlug(slug);
+    if (svc?.selectableInForm) {
+      setValue("serviceSlug", slug, { shouldValidate: true, shouldDirty: false });
+      // Pequeño delay para asegurar que el DOM ya tiene la sección
+      setTimeout(() => {
+        document
+          .getElementById("formulario")
+          ?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 60);
+    }
+  }, [setValue]);
+
   const onSubmit = (data: LeadInput) => {
     if (data.website) {
       toast.error("No pudimos procesar la solicitud");
@@ -92,7 +99,7 @@ export function HeroForm() {
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.45, ease: "easeOut" }}
-        className="relative w-full max-w-md mx-auto lg:mx-0 lg:ml-auto"
+        className="relative w-full max-w-md mx-auto lg:mx-0 lg:ml-auto scroll-mt-20"
       >
         <div className="absolute -inset-2 bg-gradient-to-br from-brand-700/15 to-transparent rounded-3xl blur-2xl -z-10" />
         <div className="bg-white border border-ink-300 rounded-2xl shadow-elevate p-5 md:p-6">
@@ -109,12 +116,12 @@ export function HeroForm() {
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-3.5" noValidate>
-            {/* Selector de tipo de informe */}
+            {/* Selector colapsable de tipo de informe (dropdown móvil-first) */}
             <Controller
               control={control}
               name="serviceSlug"
               render={({ field }) => (
-                <ServiceSelector
+                <ServicePicker
                   services={services}
                   value={field.value ?? DEFAULT_FORM_SERVICE}
                   onChange={field.onChange}
@@ -276,88 +283,6 @@ export function HeroForm() {
         service={selectedService}
       />
     </>
-  );
-}
-
-function ServiceSelector({
-  services,
-  value,
-  onChange,
-}: {
-  services: Service[];
-  value: string;
-  onChange: (slug: string) => void;
-}) {
-  return (
-    <div>
-      <Label className="mb-2 block">Elegí tu informe</Label>
-      <div role="radiogroup" className="grid gap-2">
-        {services.map((s) => {
-          const Icon = ICONS[s.icon] ?? FileText;
-          const active = value === s.slug;
-          const isCombo = s.slug === "informe-compra-segura";
-          const isExpress = s.slug === "informe-multas-express";
-          return (
-            <button
-              key={s.slug}
-              type="button"
-              role="radio"
-              aria-checked={active}
-              onClick={() => onChange(s.slug)}
-              className={`relative w-full flex items-center gap-3 p-2.5 pl-3 rounded-xl border text-left transition-all ${
-                active
-                  ? "border-brand-700 bg-brand-50 shadow-soft"
-                  : "border-ink-300 bg-white hover:border-brand-700/40"
-              }`}
-            >
-              <span
-                className={`shrink-0 inline-flex h-9 w-9 items-center justify-center rounded-lg transition-colors ${
-                  active
-                    ? "bg-brand-700 text-white"
-                    : "bg-ink-100 text-brand-700"
-                }`}
-              >
-                <Icon className="h-4.5 w-4.5" />
-              </span>
-              <span className="flex-1 min-w-0">
-                <span className="flex items-center gap-1.5">
-                  <span className="font-semibold text-[13px] text-brand-950 truncate">
-                    {s.shortLabel ?? s.title}
-                  </span>
-                  {isCombo && (
-                    <span className="inline-flex items-center px-1.5 py-0.5 rounded bg-success text-white text-[9px] font-bold uppercase tracking-wider">
-                      Combo
-                    </span>
-                  )}
-                  {isExpress && (
-                    <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-warning text-white text-[9px] font-bold uppercase tracking-wider">
-                      <Zap className="h-2.5 w-2.5" /> Express
-                    </span>
-                  )}
-                </span>
-                <span className="block text-[11px] text-ink-500 mt-0.5 truncate">
-                  {s.delivery}
-                </span>
-              </span>
-              <span className="shrink-0 text-right">
-                <span className="block text-[14px] font-bold text-brand-950">
-                  {s.priceARS ? `$${s.priceARS.toLocaleString("es-AR")}` : "—"}
-                </span>
-                <span
-                  className={`mt-0.5 inline-flex items-center justify-center h-4 w-4 rounded-full border ${
-                    active
-                      ? "border-brand-700 bg-brand-700 text-white"
-                      : "border-ink-300 bg-white"
-                  }`}
-                >
-                  {active && <CheckCircle2 className="h-3.5 w-3.5" />}
-                </span>
-              </span>
-            </button>
-          );
-        })}
-      </div>
-    </div>
   );
 }
 
