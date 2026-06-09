@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getPreferenceClient, isMpConfigured, isMpInTestMode } from "@/lib/mercadopago";
+import { cleanBaseUrl, cleanEnv } from "@/lib/utils";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -22,12 +23,28 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ ok: false, error: "unauthorized" }, { status: 401 });
   }
 
+  const baseUrl = cleanBaseUrl(process.env.NEXT_PUBLIC_BASE_URL);
   const checks: Record<string, any> = {
     mpConfigured: isMpConfigured(),
     testMode: isMpInTestMode(),
-    publicBaseUrl: process.env.NEXT_PUBLIC_BASE_URL ?? null,
-    webhookSignatureSecretSet: Boolean(process.env.MP_WEBHOOK_SECRET),
-    supabaseSet: Boolean(process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY),
+    publicBaseUrl: baseUrl || null,
+    publicBaseUrlValid: baseUrl.startsWith("https://"),
+    webhookSignatureSecretSet: Boolean(cleanEnv(process.env.MP_WEBHOOK_SECRET)),
+    supabaseSet: Boolean(
+      cleanEnv(process.env.SUPABASE_URL) &&
+        cleanEnv(process.env.SUPABASE_SERVICE_ROLE_KEY)
+    ),
+    bank: {
+      titularSet: Boolean(cleanEnv(process.env.BANK_TITULAR)),
+      aliasSet: Boolean(cleanEnv(process.env.BANK_ALIAS)),
+      cbuSet: Boolean(cleanEnv(process.env.BANK_CBU)),
+      // detectamos placeholders sin limpiar
+      hasPlaceholders: [
+        process.env.BANK_TITULAR,
+        process.env.BANK_ALIAS,
+        process.env.BANK_CBU,
+      ].some((v) => v && /[<>\[\]]/.test(v)),
+    },
   };
 
   if (!checks.mpConfigured) {
@@ -61,10 +78,18 @@ export async function GET(req: NextRequest) {
     checks.sandboxInitPoint = test.sandbox_init_point ?? null;
     return NextResponse.json({ ok: true, checks });
   } catch (e: any) {
+    const mpData =
+      e?.cause?.response?.data ??
+      e?.response?.data ??
+      e?.cause?.data ??
+      e?.cause?.error ??
+      null;
     return NextResponse.json(
       {
         ok: false,
         error: e?.message ?? "mp_test_failed",
+        mpStatus: e?.status ?? e?.cause?.status ?? null,
+        mpData,
         checks,
       },
       { status: 500 }

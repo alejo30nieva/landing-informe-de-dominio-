@@ -8,7 +8,7 @@ import {
   INFORME_PRICE_ARS,
   isMpConfigured,
 } from "@/lib/mercadopago";
-import { generateOrderId } from "@/lib/utils";
+import { generateOrderId, cleanEnv, cleanBaseUrl } from "@/lib/utils";
 import { rateLimit, getClientIp } from "@/lib/rateLimit";
 import { getServiceBySlug, DEFAULT_FORM_SERVICE } from "@/lib/services";
 
@@ -94,17 +94,18 @@ export async function POST(req: NextRequest) {
   }
 
   // 2) Para transferencia / QR devolvemos datos bancarios.
+  //    Sanitizamos los valores por si el usuario los cargó con < > o espacios.
   if (method === "transferencia" || method === "qr") {
     return NextResponse.json({
       ok: true,
       orderId,
       serviceTitle: service.title,
       amount,
-      titular: process.env.BANK_TITULAR ?? "Gestoría Córdoba",
-      banco: process.env.BANK_NAME ?? "Mercado Pago",
-      alias: process.env.BANK_ALIAS ?? "GESTORIA.CBA.MP",
-      cbu: process.env.BANK_CBU ?? "0000003100012345678901",
-      qrUrl: process.env.BANK_QR_URL ?? null,
+      titular: cleanEnv(process.env.BANK_TITULAR, "Gestoría Córdoba"),
+      banco: cleanEnv(process.env.BANK_NAME, "Mercado Pago"),
+      alias: cleanEnv(process.env.BANK_ALIAS, "GESTORIA.CBA.MP"),
+      cbu: cleanEnv(process.env.BANK_CBU, "0000003100012345678901"),
+      qrUrl: cleanEnv(process.env.BANK_QR_URL) || null,
     });
   }
 
@@ -123,9 +124,10 @@ export async function POST(req: NextRequest) {
 
   try {
     const pref = getPreferenceClient();
-    const baseUrl =
-      process.env.NEXT_PUBLIC_BASE_URL ??
-      `${req.nextUrl.protocol}//${req.nextUrl.host}`;
+    const baseUrl = cleanBaseUrl(
+      process.env.NEXT_PUBLIC_BASE_URL,
+      `${req.nextUrl.protocol}//${req.nextUrl.host}`
+    );
 
     const preference = await pref.create({
       body: {
@@ -196,13 +198,38 @@ export async function POST(req: NextRequest) {
       qrBase64: (preference as any)?.qr_code_base64 ?? null,
     });
   } catch (e: any) {
-    console.error("[checkout] MP error:", e?.message);
+    // El SDK de MP envuelve la respuesta del API en e.cause / e.message.
+    // Tomamos todo lo que podamos para que sea visible en Vercel Logs.
+    const mpStatus =
+      e?.status ?? e?.cause?.status ?? e?.response?.status ?? null;
+    const mpData =
+      e?.cause?.response?.data ??
+      e?.response?.data ??
+      e?.cause?.data ??
+      e?.cause?.error ??
+      null;
+    const message = e?.message ?? "error desconocido";
+    console.error("[checkout] MP error", {
+      message,
+      mpStatus,
+      mpData,
+      name: e?.name,
+      orderId,
+      hasToken: Boolean(process.env.MP_ACCESS_TOKEN),
+      tokenPrefix: process.env.MP_ACCESS_TOKEN?.slice(0, 8),
+      baseUrl: cleanBaseUrl(process.env.NEXT_PUBLIC_BASE_URL),
+    });
+
+    // Si el debug=1 viene en la query, devolvemos el detalle para diagnosticar.
+    // Si no, mensaje genérico al cliente.
+    const debug = req.nextUrl.searchParams.get("debug") === "1";
     return NextResponse.json(
       {
         ok: false,
         orderId,
         error:
           "No pudimos generar el checkout de pago. Probá nuevamente en unos segundos.",
+        ...(debug && { mpStatus, mpData, message }),
       },
       { status: 502 }
     );

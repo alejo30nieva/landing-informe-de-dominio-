@@ -1,10 +1,12 @@
 import { MercadoPagoConfig, Preference, Payment } from "mercadopago";
+import { cleanEnv } from "@/lib/utils";
 
 let _client: MercadoPagoConfig | null = null;
 
 export function getMpClient(): MercadoPagoConfig {
   if (_client) return _client;
-  const token = process.env.MP_ACCESS_TOKEN;
+  // Sanitizamos el token por si se copió con espacios, comillas o placeholders.
+  const token = cleanEnv(process.env.MP_ACCESS_TOKEN);
   if (!token) throw new Error("Falta MP_ACCESS_TOKEN");
   _client = new MercadoPagoConfig({
     accessToken: token,
