@@ -34,16 +34,16 @@ export function Header() {
           : "bg-white border-b border-transparent"
       )}
     >
-      <div className="container mx-auto flex h-16 items-center justify-between">
-        <Link href="/" className="flex items-center gap-2 group">
-          <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-brand-700 text-white shadow-soft">
+      <div className="container mx-auto flex h-16 items-center justify-between gap-2">
+        <Link href="/" className="flex items-center gap-2 group min-w-0 flex-1">
+          <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brand-700 text-white shadow-soft">
             <FileCheck2 className="h-5 w-5" />
           </span>
-          <div className="leading-tight">
-            <div className="font-bold text-brand-950 text-[15px] tracking-tight">
+          <div className="leading-tight min-w-0 flex-1">
+            <div className="font-bold text-brand-950 text-[14px] sm:text-[15px] tracking-tight truncate">
               Gestoría Córdoba
             </div>
-            <div className="text-[11px] text-ink-500 -mt-0.5">
+            <div className="hidden xs:block text-[11px] text-ink-500 -mt-0.5 truncate">
               Informe de Dominio Automotor
             </div>
           </div>
@@ -61,14 +61,14 @@ export function Header() {
           ))}
         </nav>
 
-        <div className="flex items-center gap-2">
-          <Button asChild className="hidden md:inline-flex">
+        <div className="flex items-center gap-2 shrink-0">
+          <Button asChild className="hidden md:inline-flex" size="sm">
             <a href="/#formulario">Consultar Informe</a>
           </Button>
           <button
             type="button"
             aria-label="Abrir menú"
-            className="lg:hidden inline-flex h-10 w-10 items-center justify-center rounded-lg text-brand-950 hover:bg-ink-100"
+            className="lg:hidden inline-flex h-10 w-10 items-center justify-center rounded-lg text-brand-950 hover:bg-ink-100 shrink-0"
             onClick={() => setOpen((v) => !v)}
           >
             {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}

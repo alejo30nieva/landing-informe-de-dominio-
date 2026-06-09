@@ -22,8 +22,11 @@
     scroll-behavior: smooth;
   }
   body {
-    @apply bg-white text-ink-900 antialiased;
+    @apply bg-white text-ink-900 antialiased overflow-x-hidden;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+  html {
+    overflow-x: hidden;
   }
   ::selection {
     background: #1246d633;
@@ -66,6 +69,17 @@
 }
 .prose-legal strong {
   @apply text-brand-950 font-semibold;
+}
+
+/* Marquee TopBar — pause on hover + respeta reduced motion */
+.marquee-wrapper:hover .marquee-track {
+  animation-play-state: paused;
+}
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track {
+    animation: none !important;
+    transform: none !important;
+  }
 }
 
 /* Toaster Sonner override sutil */

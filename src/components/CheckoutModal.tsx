@@ -134,21 +134,21 @@ export function CheckoutModal({ open, onOpenChange, lead, service }: Props) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-[680px] p-0">
-        <div className="bg-brand-950 text-white px-6 py-4 flex items-center gap-3 rounded-t-2xl">
-          <div className="h-9 w-9 rounded-md bg-brand-700 flex items-center justify-center">
+        <div className="bg-brand-950 text-white px-4 sm:px-6 py-4 flex items-start gap-3 rounded-t-2xl pr-12">
+          <div className="h-9 w-9 shrink-0 rounded-md bg-brand-700 flex items-center justify-center">
             <Lock className="h-5 w-5" />
           </div>
-          <div className="leading-tight">
-            <DialogTitle className="text-white text-base">
+          <div className="leading-tight min-w-0 flex-1">
+            <DialogTitle className="text-white text-[15px] sm:text-base">
               Pagar por Transferencia o QR
             </DialogTitle>
-            <p className="text-xs text-white/70">
+            <p className="text-[11px] sm:text-xs text-white/70 mt-0.5 leading-snug">
               0% comisión — recibís el informe en 10–15 min tras enviar el comprobante
             </p>
           </div>
         </div>
 
-        <div className="p-6 pt-2 space-y-5">
+        <div className="p-4 sm:p-6 pt-2 space-y-4 sm:space-y-5">
           {summary}
 
           <div>
@@ -318,13 +318,15 @@ function MethodPanel({
 
 function OrderHeader({ orderId }: { orderId: string }) {
   return (
-    <div className="flex items-center justify-between gap-2 text-sm">
-      <div className="flex items-center gap-2 text-ink-700">
-        <FileCheck2 className="h-4 w-4 text-brand-700" />
-        <span>Orden</span>
-        <span className="font-mono text-brand-950 font-semibold">{orderId}</span>
+    <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1.5 text-sm">
+      <div className="flex items-center gap-2 text-ink-700 min-w-0 flex-1">
+        <FileCheck2 className="h-4 w-4 text-brand-700 shrink-0" />
+        <span className="shrink-0">Orden</span>
+        <span className="font-mono text-brand-950 font-semibold text-xs sm:text-sm truncate">
+          {orderId}
+        </span>
       </div>
-      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-warning/10 text-warning text-[11px] font-bold">
+      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-warning/10 text-warning text-[10.5px] sm:text-[11px] font-bold shrink-0">
         <Clock className="h-3 w-3" /> Esperando pago
       </span>
     </div>
@@ -363,8 +365,10 @@ function SendComprobanteStep({ waUrl }: { waUrl: string }) {
 function KV({ k, v, copy }: { k: string; v: string; copy?: boolean }) {
   return (
     <div className="flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-md bg-ink-100 border border-ink-300/60">
-      <span className="text-ink-500">{k}</span>
-      <span className="font-mono text-brand-950 truncate">{v}</span>
+      <span className="text-ink-500 shrink-0">{k}</span>
+      <span className="font-mono text-brand-950 break-all text-right flex-1 min-w-0">
+        {v}
+      </span>
       {copy && (
         <button
           type="button"
@@ -372,7 +376,7 @@ function KV({ k, v, copy }: { k: string; v: string; copy?: boolean }) {
             navigator.clipboard.writeText(v);
             toast.success(`${k} copiado`);
           }}
-          className="text-ink-500 hover:text-brand-700"
+          className="text-ink-500 hover:text-brand-700 shrink-0"
           aria-label={`Copiar ${k}`}
         >
           <Copy className="h-3.5 w-3.5" />
@@ -404,19 +408,21 @@ function CopyRow({
   };
   return (
     <div
-      className={`flex items-center justify-between gap-3 p-3 rounded-lg border ${
+      className={`flex flex-col xs:flex-row xs:items-center xs:justify-between gap-2 xs:gap-3 p-3 rounded-lg border ${
         primary
           ? "bg-brand-50 border-brand-100"
           : "bg-ink-100 border-ink-300/60"
       }`}
     >
-      <div className="min-w-0">
+      <div className="min-w-0 flex-1">
         <div className="text-[10px] uppercase tracking-widest font-semibold text-ink-500">
           {label}
         </div>
         <div
-          className={`text-sm font-mono truncate ${
-            primary ? "text-brand-700 font-bold text-base" : "text-brand-950"
+          className={`mt-0.5 font-mono break-all leading-tight ${
+            primary
+              ? "text-brand-700 font-bold text-[15px]"
+              : "text-brand-950 text-[13px]"
           }`}
         >
           {value}
@@ -425,7 +431,7 @@ function CopyRow({
       <button
         type="button"
         onClick={copy}
-        className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-md bg-white border border-ink-300 text-xs font-semibold text-brand-950 hover:bg-brand-50 hover:border-brand-700/30 transition-colors shrink-0"
+        className="inline-flex items-center justify-center gap-1 px-2.5 py-1.5 rounded-md bg-white border border-ink-300 text-xs font-semibold text-brand-950 hover:bg-brand-50 hover:border-brand-700/30 transition-colors shrink-0 self-stretch xs:self-auto"
       >
         {copied ? (
           <>
