@@ -11,6 +11,8 @@ import {
   ArrowRight,
   CheckCircle2,
   MapPin,
+  Banknote,
+  Loader2,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -33,6 +35,7 @@ export function HeroForm() {
   const services = useMemo(() => getFormSelectableServices(), []);
   const [open, setOpen] = useState(false);
   const [lead, setLead] = useState<LeadInput | null>(null);
+  const [redirecting, setRedirecting] = useState(false);
 
   const {
     register,
@@ -83,14 +86,59 @@ export function HeroForm() {
     }
   }, [setValue]);
 
-  const onSubmit = (data: LeadInput) => {
+  /**
+   * Flujo principal: el cliente hace click en "PAGAR CON MERCADOPAGO"
+   * y se redirige DIRECTO al checkout de MP, sin pasar por el modal.
+   * Si MP falla por cualquier motivo, abrimos el modal con transferencia
+   * preseleccionada como fallback.
+   */
+  const onSubmit = async (data: LeadInput) => {
     if (data.website) {
       toast.error("No pudimos procesar la solicitud");
       return;
     }
+    setRedirecting(true);
+    try {
+      const res = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...data, method: "mercadopago" }),
+      });
+      const json = (await res.json().catch(() => null)) as {
+        ok?: boolean;
+        initPoint?: string;
+        error?: string;
+      } | null;
+
+      if (json?.ok && json.initPoint) {
+        // Redirect inmediato — el cliente entra a la página de pago de MP
+        window.location.href = json.initPoint;
+        return;
+      }
+
+      // Fallback: MP no está configurado o falló → abrir modal con
+      // transferencia/QR como alternativa.
+      toast.error(
+        json?.error ??
+          "No pudimos conectar con MercadoPago. Usá transferencia o QR."
+      );
+      setLead(data);
+      setOpen(true);
+    } catch {
+      toast.error("Error de conexión. Probá nuevamente.");
+      setLead(data);
+      setOpen(true);
+    } finally {
+      setRedirecting(false);
+    }
+  };
+
+  /** Flujo alternativo: abrir el modal con Transferencia/QR. */
+  const onAltPayment = handleSubmit((data: LeadInput) => {
+    if (data.website) return;
     setLead(data);
     setOpen(true);
-  };
+  });
 
   return (
     <>
@@ -242,17 +290,43 @@ export function HeroForm() {
 
             <div className="pt-2">
               <PriceSummary service={selectedService} price={price} />
+
+              {/* Botón PRIMARIO — redirect directo a MercadoPago */}
               <Button
                 type="submit"
                 size="xl"
                 className="w-full"
-                loading={isSubmitting}
-                disabled={!isValid || isSubmitting}
+                loading={redirecting || isSubmitting}
+                disabled={!isValid || isSubmitting || redirecting}
               >
-                SOLICITAR INFORME
-                <ArrowRight className="h-5 w-5" />
+                {redirecting ? (
+                  <>
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                    Conectando con MercadoPago…
+                  </>
+                ) : (
+                  <>
+                    PAGAR CON MERCADOPAGO
+                    <ArrowRight className="h-5 w-5" />
+                  </>
+                )}
               </Button>
-              <p className="mt-2.5 flex items-center justify-center gap-1.5 text-[12px] text-ink-500">
+
+              {/* Botón SECUNDARIO — Transferencia / QR (abre modal) */}
+              <button
+                type="button"
+                onClick={onAltPayment}
+                disabled={!isValid || isSubmitting || redirecting}
+                className="mt-2 w-full inline-flex items-center justify-center gap-2 h-11 rounded-lg border border-ink-300 bg-white text-brand-950 font-semibold text-sm hover:bg-ink-100 hover:border-brand-700/40 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                <Banknote className="h-4 w-4" />
+                Pagar por Transferencia o QR
+                <span className="ml-1 inline-flex items-center px-1.5 py-0.5 rounded bg-success text-white text-[9px] font-bold uppercase tracking-wider">
+                  0% comisión
+                </span>
+              </button>
+
+              <p className="mt-3 flex items-center justify-center gap-1.5 text-[12px] text-ink-500">
                 <MapPin className="h-3.5 w-3.5 text-brand-700" />
                 Válido para toda la República Argentina
               </p>
@@ -260,16 +334,17 @@ export function HeroForm() {
 
             <div className="pt-3 border-t border-ink-300/60 mt-3">
               <p className="text-[11px] text-center text-ink-500 mb-2 uppercase tracking-wider font-semibold">
-                Medios de pago
+                Medios de pago aceptados
               </p>
               <div className="flex flex-wrap items-center justify-center gap-2 text-ink-700">
                 <PaymentBadge label="MercadoPago" />
-                <PaymentBadge icon={<CreditCard className="h-3.5 w-3.5" />} label="Tarjetas" />
+                <PaymentBadge icon={<CreditCard className="h-3.5 w-3.5" />} label="Débito" />
+                <PaymentBadge icon={<CreditCard className="h-3.5 w-3.5" />} label="Crédito" />
                 <PaymentBadge icon={<QrCode className="h-3.5 w-3.5" />} label="QR" />
                 <PaymentBadge label="Transferencia" />
               </div>
               <p className="mt-3 flex items-center justify-center gap-1.5 text-[11px] text-ink-500">
-                <Lock className="h-3 w-3" /> Pago 100% seguro y cifrado
+                <Lock className="h-3 w-3" /> Pago 100% seguro y cifrado por MercadoPago
               </p>
             </div>
           </form>

@@ -2,10 +2,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
-  CreditCard,
   QrCode,
   Banknote,
-  Wallet,
   Copy,
   ShieldCheck,
   Lock,
@@ -14,7 +12,6 @@ import {
   CheckCircle2,
   MessageCircle,
   Clock,
-  ArrowRight,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -28,14 +25,13 @@ import { formatARS } from "@/lib/utils";
 import type { LeadInput } from "@/lib/validations";
 import type { Service } from "@/lib/services";
 
-type Method = "transferencia" | "qr" | "mercadopago" | "tarjeta";
+type Method = "transferencia" | "qr";
 
-// Orden importante: transferencia y QR primero (flujo principal solicitado por el cliente).
+// Sólo Transferencia y QR — para los que prefieren NO usar MercadoPago.
+// El flujo MP/Tarjeta se maneja con redirect directo desde el botón principal.
 const methods: { id: Method; label: string; icon: any; desc: string; badge?: string }[] = [
   { id: "transferencia", label: "Transferencia", icon: Banknote, desc: "Alias / CBU", badge: "Recomendado" },
   { id: "qr", label: "QR", icon: QrCode, desc: "Escaneá y pagá" },
-  { id: "mercadopago", label: "MercadoPago", icon: Wallet, desc: "Con tu cuenta MP" },
-  { id: "tarjeta", label: "Tarjeta", icon: CreditCard, desc: "Débito / Crédito" },
 ];
 
 type Props = {
@@ -143,9 +139,11 @@ export function CheckoutModal({ open, onOpenChange, lead, service }: Props) {
             <Lock className="h-5 w-5" />
           </div>
           <div className="leading-tight">
-            <DialogTitle className="text-white text-base">Pago seguro</DialogTitle>
+            <DialogTitle className="text-white text-base">
+              Pagar por Transferencia o QR
+            </DialogTitle>
             <p className="text-xs text-white/70">
-              Elegí cómo querés pagar — recibís el informe en 10–15 minutos
+              0% comisión — recibís el informe en 10–15 min tras enviar el comprobante
             </p>
           </div>
         </div>
@@ -155,9 +153,9 @@ export function CheckoutModal({ open, onOpenChange, lead, service }: Props) {
 
           <div>
             <p className="text-xs uppercase tracking-widest font-semibold text-ink-500 mb-2">
-              Método de pago
+              Método sin comisión
             </p>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            <div className="grid grid-cols-2 gap-2">
               {methods.map((m) => {
                 const active = method === m.id;
                 return (
@@ -262,27 +260,6 @@ function MethodPanel({
   const orderId = data.orderId ?? "—";
   const amount = data.amount ?? price;
   const waUrl = buildWaComprobante(orderId, amount, lead?.patente);
-
-  // MercadoPago / Tarjeta: redirección clásica
-  if (method === "mercadopago" || method === "tarjeta") {
-    return (
-      <div className="rounded-xl border border-ink-300 p-5 bg-white space-y-4">
-        <OrderHeader orderId={orderId} />
-        <p className="text-sm text-ink-700 leading-relaxed">
-          {method === "tarjeta"
-            ? "Vas a ser redirigido al checkout seguro de MercadoPago para pagar con tarjeta de débito o crédito."
-            : "Vas a ser redirigido a MercadoPago para pagar con tu cuenta, tarjeta o dinero disponible."}
-        </p>
-        <Button asChild size="lg" className="w-full">
-          <a href={data.initPoint} rel="noopener noreferrer">
-            Ir a pagar {method === "tarjeta" ? "con tarjeta" : "con MercadoPago"}
-            <ArrowRight className="h-4 w-4" />
-          </a>
-        </Button>
-        <DeliveryHint />
-      </div>
-    );
-  }
 
   // QR
   if (method === "qr") {
