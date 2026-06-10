@@ -188,10 +188,65 @@ function SampleSectionBlock({
   return (
     <section
       id={slug}
-      className={`py-12 md:py-16 ${alt ? "bg-ink-100/50" : "bg-white"} scroll-mt-24`}
+      className={`py-8 sm:py-12 md:py-16 ${alt ? "bg-ink-100/50" : "bg-white"} scroll-mt-24`}
     >
       <div className="container mx-auto">
-        <div className="grid lg:grid-cols-[1fr_2fr] gap-8 lg:gap-12 items-start">
+        {/* MOBILE: encabezado compacto arriba */}
+        <div className="lg:hidden mb-5">
+          <div className="bg-white border border-ink-300 rounded-2xl shadow-soft p-4">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0 flex-1">
+                <span className="text-[10.5px] font-bold tracking-widest text-brand-700 uppercase">
+                  {service.category === "informes" ? "Informe" : "Servicio"}
+                </span>
+                <h2 className="mt-1 text-[19px] font-extrabold text-brand-950 tracking-tight leading-tight">
+                  {service.title}
+                </h2>
+              </div>
+              {price && (
+                <div className="shrink-0 text-right">
+                  <div className="text-[18px] font-extrabold text-brand-700 whitespace-nowrap">
+                    {price}
+                  </div>
+                  <div className="text-[10px] text-ink-500 leading-tight">
+                    {service.delivery}
+                  </div>
+                </div>
+              )}
+            </div>
+            <p className="mt-2 text-[12.5px] text-ink-700 leading-relaxed">
+              {service.shortDesc}
+            </p>
+            <div className="mt-3 grid grid-cols-2 gap-2">
+              {service.selectableInForm ? (
+                <Button asChild size="md" className="w-full">
+                  <Link href={`/?s=${service.slug}#formulario`}>
+                    Solicitar
+                    <ArrowRight className="h-4 w-4" />
+                  </Link>
+                </Button>
+              ) : (
+                <Button asChild size="md" className="w-full">
+                  <a href={wa} target="_blank" rel="noopener noreferrer">
+                    Consultar
+                  </a>
+                </Button>
+              )}
+              <a
+                href={wa}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-1.5 h-11 rounded-lg bg-[#25D366] hover:bg-[#1ebe5b] text-white font-semibold text-sm transition-colors px-3"
+              >
+                <MessageCircle className="h-4 w-4" />
+                WhatsApp
+              </a>
+            </div>
+          </div>
+        </div>
+
+        {/* DESKTOP: sidebar + sample */}
+        <div className="hidden lg:grid lg:grid-cols-[1fr_2fr] gap-8 lg:gap-12 items-start">
           {/* Sidebar info */}
           <div className="lg:sticky lg:top-24">
             <div className="bg-white border border-ink-300 rounded-2xl shadow-soft p-6">
@@ -257,9 +312,12 @@ function SampleSectionBlock({
             </div>
           </div>
 
-          {/* Sample */}
+          {/* Sample desktop */}
           <div>{sample}</div>
         </div>
+
+        {/* MOBILE: sample full width */}
+        <div className="lg:hidden">{sample}</div>
       </div>
     </section>
   );
