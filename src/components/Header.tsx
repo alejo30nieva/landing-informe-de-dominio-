@@ -34,12 +34,12 @@ export function Header() {
           : "bg-white border-b border-transparent"
       )}
     >
-      <div className="container mx-auto flex h-16 items-center justify-between gap-2">
-        <Link href="/" className="flex items-center gap-2 group min-w-0 flex-1">
+      <div className="container mx-auto flex h-16 items-center justify-between gap-2 max-w-full">
+        <Link href="/" className="flex items-center gap-2 group min-w-0 flex-1 overflow-hidden">
           <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brand-700 text-white shadow-soft">
             <FileCheck2 className="h-5 w-5" />
           </span>
-          <div className="leading-tight min-w-0 flex-1">
+          <div className="leading-tight min-w-0 flex-1 overflow-hidden">
             <div className="font-bold text-brand-950 text-[14px] sm:text-[15px] tracking-tight truncate">
               Gestoría Córdoba
             </div>

@@ -150,7 +150,7 @@ export function HeroForm() {
         className="relative w-full max-w-md mx-auto lg:mx-0 lg:ml-auto scroll-mt-20"
       >
         <div className="absolute -inset-2 bg-gradient-to-br from-brand-700/15 to-transparent rounded-3xl blur-2xl -z-10" />
-        <div className="bg-white border border-ink-300 rounded-2xl shadow-elevate p-5 md:p-6">
+        <div className="bg-white border border-ink-300 rounded-2xl shadow-elevate p-4 sm:p-5 md:p-6">
           <div className="flex items-center gap-2 mb-4">
             <div className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-brand-50 text-brand-700">
               <ShieldCheck className="h-5 w-5" />
@@ -295,19 +295,22 @@ export function HeroForm() {
               <Button
                 type="submit"
                 size="xl"
-                className="w-full"
+                className="w-full px-4 sm:px-8 text-[15px] sm:text-base"
                 loading={redirecting || isSubmitting}
                 disabled={!isValid || isSubmitting || redirecting}
               >
                 {redirecting ? (
                   <>
-                    <Loader2 className="h-5 w-5 animate-spin" />
-                    Conectando con MercadoPago…
+                    <Loader2 className="h-5 w-5 animate-spin shrink-0" />
+                    <span className="truncate">Conectando con MercadoPago…</span>
                   </>
                 ) : (
                   <>
-                    PAGAR CON MERCADOPAGO
-                    <ArrowRight className="h-5 w-5" />
+                    <span className="truncate">
+                      <span className="sm:hidden">PAGAR CON MP</span>
+                      <span className="hidden sm:inline">PAGAR CON MERCADOPAGO</span>
+                    </span>
+                    <ArrowRight className="h-5 w-5 shrink-0" />
                   </>
                 )}
               </Button>
@@ -372,15 +375,15 @@ function PriceSummary({ service, price }: { service: Service; price: number }) {
         transition={{ duration: 0.18 }}
         className="flex items-center justify-between gap-3 mb-3 p-3 rounded-lg bg-ink-100 border border-ink-300/60"
       >
-        <div className="min-w-0">
-          <div className="text-[11px] uppercase tracking-widest font-semibold text-ink-500">
+        <div className="flex-1 min-w-0">
+          <div className="text-[10.5px] sm:text-[11px] uppercase tracking-widest font-semibold text-ink-500">
             A pagar
           </div>
-          <div className="text-sm font-semibold text-brand-950 truncate">
+          <div className="text-[13px] sm:text-sm font-semibold text-brand-950 truncate">
             {service.title}
           </div>
         </div>
-        <div className="text-2xl font-extrabold text-brand-950 whitespace-nowrap">
+        <div className="text-xl sm:text-2xl font-extrabold text-brand-950 whitespace-nowrap shrink-0">
           {formatARS(price)}
         </div>
       </motion.div>

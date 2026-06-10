@@ -98,7 +98,7 @@ export function ServicePicker({ services, value, onChange, label = "Elegí tu in
         aria-controls={listboxId}
         onClick={() => setOpen((v) => !v)}
         className={cn(
-          "w-full flex items-center gap-3 p-3 rounded-xl border bg-white text-left transition-all",
+          "w-full flex items-center gap-2.5 sm:gap-3 p-2.5 sm:p-3 rounded-xl border bg-white text-left transition-all",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-700/30",
           open
             ? "border-brand-700 ring-1 ring-brand-700/20"
@@ -106,9 +106,9 @@ export function ServicePicker({ services, value, onChange, label = "Elegí tu in
         )}
       >
         <ServiceIcon service={selected} active />
-        <span className="flex-1 min-w-0">
-          <span className="flex items-center gap-1.5">
-            <span className="font-semibold text-[14px] text-brand-950 truncate">
+        <span className="flex-1 min-w-0 overflow-hidden">
+          <span className="flex items-center gap-1.5 min-w-0">
+            <span className="font-semibold text-[14px] text-brand-950 truncate min-w-0">
               {selected.title}
             </span>
             {selected.slug === "informe-multas-express" && (
@@ -123,16 +123,16 @@ export function ServicePicker({ services, value, onChange, label = "Elegí tu in
           </span>
         </span>
         <span className="text-right shrink-0">
-          <span className="block text-[15px] font-bold text-brand-950">
+          <span className="block text-[14px] sm:text-[15px] font-bold text-brand-950 whitespace-nowrap">
             {selected.priceARS ? `$${selected.priceARS.toLocaleString("es-AR")}` : "—"}
           </span>
-          <span className="block text-[10px] text-ink-500 uppercase font-semibold tracking-wider">
+          <span className="block text-[9.5px] sm:text-[10px] text-ink-500 uppercase font-semibold tracking-wider">
             Cambiar
           </span>
         </span>
         <ChevronDown
           className={cn(
-            "h-5 w-5 text-brand-700 transition-transform",
+            "h-5 w-5 text-brand-700 transition-transform shrink-0",
             open && "rotate-180"
           )}
         />
