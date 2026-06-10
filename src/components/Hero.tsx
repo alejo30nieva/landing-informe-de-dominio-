@@ -36,8 +36,8 @@ export function Hero() {
         }}
       />
 
-      <div className="container mx-auto py-10 md:py-16 lg:py-24">
-        <div className="grid lg:grid-cols-2 gap-8 lg:gap-14 items-center">
+      <div className="container mx-auto py-6 md:py-16 lg:py-24">
+        <div className="grid lg:grid-cols-2 gap-6 lg:gap-14 items-center">
           {/* Texto: en mobile va segundo, en desktop primero */}
           <motion.div
             initial={{ opacity: 0, y: 16 }}

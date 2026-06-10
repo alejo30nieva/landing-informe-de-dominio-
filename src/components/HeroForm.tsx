@@ -147,23 +147,25 @@ export function HeroForm() {
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.45, ease: "easeOut" }}
-        className="relative w-full max-w-md mx-auto lg:mx-0 lg:ml-auto scroll-mt-20"
+        className="relative w-full max-w-[420px] sm:max-w-md mx-auto lg:mx-0 lg:ml-auto scroll-mt-20"
       >
         <div className="absolute -inset-2 bg-gradient-to-br from-brand-700/15 to-transparent rounded-3xl blur-2xl -z-10" />
         <div className="bg-white border border-ink-300 rounded-2xl shadow-elevate p-4 sm:p-5 md:p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <div className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-brand-50 text-brand-700">
-              <ShieldCheck className="h-5 w-5" />
+          <div className="flex items-center gap-2 mb-3.5">
+            <div className="inline-flex h-8 sm:h-9 w-8 sm:w-9 shrink-0 items-center justify-center rounded-lg bg-brand-50 text-brand-700">
+              <ShieldCheck className="h-4 sm:h-5 w-4 sm:w-5" />
             </div>
-            <div>
-              <h3 className="font-semibold text-brand-950 leading-tight">
+            <div className="min-w-0">
+              <h3 className="font-semibold text-brand-950 leading-tight text-[15px] sm:text-base truncate">
                 Pedí tu informe online
               </h3>
-              <p className="text-xs text-ink-500">100% online — pago seguro</p>
+              <p className="text-[11px] sm:text-xs text-ink-500 truncate">
+                100% online — pago seguro
+              </p>
             </div>
           </div>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-3.5" noValidate>
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-3" noValidate>
             {/* Selector colapsable de tipo de informe (dropdown móvil-first) */}
             <Controller
               control={control}
@@ -288,7 +290,7 @@ export function HeroForm() {
               <p className="text-xs text-danger -mt-2">{errors.terms.message as string}</p>
             )}
 
-            <div className="pt-2">
+            <div className="pt-1">
               <PriceSummary service={selectedService} price={price} />
 
               {/* Botón PRIMARIO — redirect directo a MercadoPago */}
@@ -320,34 +322,30 @@ export function HeroForm() {
                 type="button"
                 onClick={onAltPayment}
                 disabled={!isValid || isSubmitting || redirecting}
-                className="mt-2 w-full inline-flex items-center justify-center gap-2 h-11 rounded-lg border border-ink-300 bg-white text-brand-950 font-semibold text-sm hover:bg-ink-100 hover:border-brand-700/40 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="mt-2 w-full inline-flex items-center justify-center gap-1.5 h-10 rounded-lg border border-ink-300 bg-white text-brand-950 font-semibold text-[13px] hover:bg-ink-100 hover:border-brand-700/40 disabled:opacity-50 disabled:cursor-not-allowed transition-colors px-2"
               >
-                <Banknote className="h-4 w-4" />
-                Pagar por Transferencia o QR
-                <span className="ml-1 inline-flex items-center px-1.5 py-0.5 rounded bg-success text-white text-[9px] font-bold uppercase tracking-wider">
-                  0% comisión
+                <Banknote className="h-3.5 w-3.5 shrink-0" />
+                <span className="truncate">Transferencia o QR</span>
+                <span className="inline-flex items-center px-1.5 py-0.5 rounded bg-success text-white text-[9px] font-bold uppercase tracking-wider shrink-0">
+                  0%
                 </span>
               </button>
 
-              <p className="mt-3 flex items-center justify-center gap-1.5 text-[12px] text-ink-500">
-                <MapPin className="h-3.5 w-3.5 text-brand-700" />
+              <p className="mt-2.5 flex items-center justify-center gap-1.5 text-[11px] text-ink-500">
+                <MapPin className="h-3 w-3 text-brand-700 shrink-0" />
                 Válido para toda la República Argentina
               </p>
             </div>
 
-            <div className="pt-3 border-t border-ink-300/60 mt-3">
-              <p className="text-[11px] text-center text-ink-500 mb-2 uppercase tracking-wider font-semibold">
-                Medios de pago aceptados
-              </p>
-              <div className="flex flex-wrap items-center justify-center gap-2 text-ink-700">
+            <div className="pt-3 border-t border-ink-300/60 mt-1">
+              <div className="flex flex-wrap items-center justify-center gap-1.5">
                 <PaymentBadge label="MercadoPago" />
-                <PaymentBadge icon={<CreditCard className="h-3.5 w-3.5" />} label="Débito" />
-                <PaymentBadge icon={<CreditCard className="h-3.5 w-3.5" />} label="Crédito" />
-                <PaymentBadge icon={<QrCode className="h-3.5 w-3.5" />} label="QR" />
+                <PaymentBadge icon={<CreditCard className="h-3 w-3" />} label="Tarjetas" />
+                <PaymentBadge icon={<QrCode className="h-3 w-3" />} label="QR" />
                 <PaymentBadge label="Transferencia" />
               </div>
-              <p className="mt-3 flex items-center justify-center gap-1.5 text-[11px] text-ink-500">
-                <Lock className="h-3 w-3" /> Pago 100% seguro y cifrado por MercadoPago
+              <p className="mt-2.5 flex items-center justify-center gap-1.5 text-[10.5px] text-ink-500">
+                <Lock className="h-3 w-3" /> Pago seguro cifrado por MercadoPago
               </p>
             </div>
           </form>
@@ -405,8 +403,10 @@ function Field({
   children: React.ReactNode;
 }) {
   return (
-    <div className="space-y-1.5">
-      <Label className="flex items-center justify-between">{label}</Label>
+    <div className="space-y-1">
+      <Label className="flex items-center justify-between text-[12.5px] sm:text-sm">
+        {label}
+      </Label>
       <div className="relative">
         {children}
         {ok && (
@@ -414,9 +414,9 @@ function Field({
         )}
       </div>
       {error ? (
-        <p className="text-xs text-danger">{error}</p>
+        <p className="text-[11px] text-danger">{error}</p>
       ) : hint ? (
-        <p className="text-xs text-ink-500">{hint}</p>
+        <p className="text-[11px] text-ink-500">{hint}</p>
       ) : null}
     </div>
   );

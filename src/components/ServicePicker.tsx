@@ -85,7 +85,7 @@ export function ServicePicker({ services, value, onChange, label = "Elegí tu in
 
   return (
     <div className="relative" ref={wrapperRef}>
-      <Label htmlFor={triggerId} className="mb-2 block">
+      <Label htmlFor={triggerId} className="mb-1.5 block text-[12.5px] sm:text-sm">
         {label}
       </Label>
 
