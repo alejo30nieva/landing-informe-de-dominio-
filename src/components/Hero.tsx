@@ -37,13 +37,16 @@ export function Hero() {
       />
 
       <div className="container mx-auto py-6 md:py-16 lg:py-24">
-        <div className="grid lg:grid-cols-2 gap-6 lg:gap-14 items-center">
+        {/* min-w-0 en el grid Y en cada celda evita que el contenido
+            (títulos largos, precios whitespace-nowrap) fuerce las columnas
+            más anchas que el viewport → causa real del overflow a la derecha. */}
+        <div className="grid lg:grid-cols-2 gap-6 lg:gap-14 items-center min-w-0">
           {/* Texto: en mobile va segundo, en desktop primero */}
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease: "easeOut" }}
-            className="order-2 lg:order-1"
+            className="order-2 lg:order-1 min-w-0"
           >
             <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-brand-50 border border-brand-100 text-brand-700 text-xs font-semibold">
               <ShieldCheck className="h-3.5 w-3.5" />
@@ -89,9 +92,9 @@ export function Hero() {
           </motion.div>
 
           {/* Form: en mobile va arriba (más importante), en desktop a la derecha.
-              w-full + el max-w-md mx-auto del propio form lo centran igual
-              que las cards de PricingTable (mismo ancho de contenedor). */}
-          <div className="order-1 lg:order-2 w-full">
+              w-full + min-w-0 + el max-w-md mx-auto del propio form lo centran
+              igual que las cards de PricingTable (mismo ancho de contenedor). */}
+          <div className="order-1 lg:order-2 w-full min-w-0">
             <HeroForm />
           </div>
         </div>
