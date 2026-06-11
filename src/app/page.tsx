@@ -9,10 +9,25 @@ import { FAQ } from "@/components/FAQ";
 import { FinalCTA } from "@/components/FinalCTA";
 import { Footer } from "@/components/Footer";
 import { WhatsAppButton } from "@/components/WhatsAppButton";
+import { JsonLd, faqSchema, serviceSchema, SITE_URL } from "@/lib/seo";
+import { FAQS } from "@/lib/faqs";
+import { SERVICES } from "@/lib/services";
 
 export default function HomePage() {
+  const informeServices = SERVICES.filter(
+    (s) => s.category === "informes" && s.priceARS
+  ).map((s) =>
+    serviceSchema({
+      name: s.title,
+      description: s.shortDesc,
+      priceARS: s.priceARS,
+      url: `${SITE_URL}/#informes`,
+    })
+  );
+
   return (
     <>
+      <JsonLd data={[faqSchema(FAQS), ...informeServices]} />
       <TopBar />
       <Header />
       <main>

@@ -6,11 +6,10 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 const links = [
-  { href: "/#inicio", label: "Inicio" },
   { href: "/#informes", label: "Informes" },
-  { href: "/#que-es", label: "¿Qué es?" },
-  { href: "/servicios", label: "Gestoría" },
+  { href: "/servicios", label: "Servicios" },
   { href: "/ejemplos", label: "Ejemplos" },
+  { href: "/guias", label: "Guías" },
   { href: "/#faq", label: "FAQ" },
 ];
 

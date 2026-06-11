@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import { Toaster } from "sonner";
+import { JsonLd, localBusinessSchema, webSiteSchema } from "@/lib/seo";
 import "./globals.css";
 
 const inter = Inter({
@@ -10,7 +11,7 @@ const inter = Inter({
 });
 
 const siteUrl =
-  process.env.NEXT_PUBLIC_BASE_URL ?? "https://informe-dominio-cordoba.vercel.app";
+  process.env.NEXT_PUBLIC_BASE_URL ?? "https://landing-informe-de-dominio.vercel.app";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -63,10 +64,21 @@ export const metadata: Metadata = {
   robots: {
     index: true,
     follow: true,
-    googleBot: { index: true, follow: true, "max-image-preview": "large" },
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
   },
   icons: { icon: "/favicon.svg" },
   category: "automotive",
+  // Verificación de Google Search Console.
+  // Pegá el código de la env GOOGLE_SITE_VERIFICATION cuando lo tengas.
+  verification: process.env.GOOGLE_SITE_VERIFICATION
+    ? { google: process.env.GOOGLE_SITE_VERIFICATION }
+    : undefined,
 };
 
 export const viewport: Viewport = {
@@ -76,35 +88,11 @@ export const viewport: Viewport = {
   maximumScale: 5,
 };
 
-const jsonLd = {
-  "@context": "https://schema.org",
-  "@type": "ProfessionalService",
-  name: "Gestoría Córdoba — Informe de Dominio Automotor",
-  description:
-    "Tramitamos Informes de Dominio Automotor oficiales de forma 100% online en Argentina.",
-  url: siteUrl,
-  telephone: "+5493515724733",
-  areaServed: { "@type": "Country", name: "Argentina" },
-  address: {
-    "@type": "PostalAddress",
-    addressLocality: "Córdoba",
-    addressRegion: "Córdoba",
-    addressCountry: "AR",
-  },
-  priceRange: "$$",
-  serviceType: "Informe de Dominio Automotor",
-  openingHours: "Mo-Fr 09:00-18:00",
-  sameAs: ["https://wa.me/5493515724733"],
-};
-
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="es-AR" className={inter.variable}>
       <head>
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
+        <JsonLd data={[localBusinessSchema(), webSiteSchema()]} />
       </head>
       <body className="font-sans">
         {children}
