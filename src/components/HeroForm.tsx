@@ -243,7 +243,7 @@ export function HeroForm() {
           {/* Step content */}
           <form
             onSubmit={handleFinalSubmit}
-            className="p-4 sm:p-5 min-h-[320px] flex flex-col"
+            className="p-5 min-h-[330px] flex flex-col"
             noValidate
           >
             {/* Honeypot anti-spam */}
@@ -389,7 +389,7 @@ function StepService({
       <p className="text-[12.5px] text-ink-700 mb-3">
         Tocá el informe que necesitás.
       </p>
-      <div className="grid gap-2">
+      <div className="grid gap-2.5">
         {services.map((s) => {
           const Icon = SVC_ICONS[s.icon] ?? FileText;
           const active = s.slug === selectedSlug;
@@ -401,19 +401,19 @@ function StepService({
               type="button"
               onClick={() => onSelect(s.slug)}
               className={cn(
-                "relative w-full flex items-center gap-2.5 p-2.5 rounded-xl border text-left transition-all active:scale-[0.99]",
+                "relative w-full flex items-center gap-3 p-3 rounded-xl border text-left transition-all active:scale-[0.99]",
                 active
-                  ? "border-brand-700 bg-brand-50 shadow-soft"
-                  : "border-ink-300 bg-white hover:border-brand-700/40"
+                  ? "border-brand-700 bg-brand-50 shadow-soft ring-1 ring-brand-700/20"
+                  : "border-ink-300 bg-white hover:border-brand-700/40 hover:shadow-soft"
               )}
             >
               <span
                 className={cn(
-                  "shrink-0 inline-flex h-9 w-9 items-center justify-center rounded-lg",
+                  "shrink-0 inline-flex h-10 w-10 items-center justify-center rounded-lg transition-colors",
                   active ? "bg-brand-700 text-white" : "bg-ink-100 text-brand-700"
                 )}
               >
-                <Icon className="h-4 w-4" />
+                <Icon className="h-[18px] w-[18px]" />
               </span>
               <span className="flex-1 min-w-0 overflow-hidden">
                 <span className="flex items-center gap-1.5 min-w-0">
