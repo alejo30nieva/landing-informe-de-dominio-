@@ -89,7 +89,8 @@ export function Hero() {
           </motion.div>
 
           {/* Form: en mobile va arriba (más importante), en desktop a la derecha */}
-          <div className="order-1 lg:order-2">
+          {/* flex justify-center fuerza centrado VISIBLE en mobile/tablet */}
+          <div className="order-1 lg:order-2 w-full flex justify-center lg:block px-1 sm:px-0">
             <HeroForm />
           </div>
         </div>

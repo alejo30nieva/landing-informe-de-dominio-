@@ -4,7 +4,6 @@ import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  ShieldCheck,
   ArrowRight,
   ArrowLeft,
   CheckCircle2,
@@ -196,27 +195,30 @@ export function HeroForm() {
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.45, ease: "easeOut" }}
-        className="relative w-full max-w-[420px] sm:max-w-md mx-auto lg:mx-0 lg:ml-auto scroll-mt-20"
+        className="relative w-full max-w-[380px] sm:max-w-md mx-auto lg:mx-0 lg:ml-auto scroll-mt-20"
       >
         <div className="absolute -inset-2 bg-gradient-to-br from-brand-700/15 to-transparent rounded-3xl blur-2xl -z-10" />
         <div className="bg-white border border-ink-300 rounded-2xl shadow-elevate overflow-hidden">
-          {/* Header con back + progress */}
-          <div className="px-4 sm:px-5 pt-4 pb-3 flex items-center gap-3 border-b border-ink-300/60">
+          {/* Header con back + progress.
+              Quitamos el shield verde de la derecha para balancear el peso visual:
+              antes el header tenía un ícono brillante a la derecha que generaba
+              la sensación de "form leaning right". */}
+          <div className="px-4 sm:px-5 pt-3.5 pb-3 flex items-center gap-3 border-b border-ink-300/60">
             <button
               type="button"
               onClick={goBack}
               disabled={step === 1}
               aria-label="Volver"
               className={cn(
-                "inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg transition-colors",
+                "inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition-colors",
                 step === 1
-                  ? "text-ink-300 cursor-not-allowed"
+                  ? "text-ink-300 cursor-not-allowed opacity-0"
                   : "text-brand-700 hover:bg-brand-50"
               )}
             >
               <ArrowLeft className="h-4 w-4" />
             </button>
-            <div className="flex-1 min-w-0">
+            <div className="flex-1 min-w-0 text-center">
               <div className="text-[10.5px] font-bold uppercase tracking-widest text-brand-700">
                 Paso {step} de {TOTAL_STEPS}
               </div>
@@ -224,7 +226,8 @@ export function HeroForm() {
                 {STEP_TITLES[step]}
               </h3>
             </div>
-            <ShieldCheck className="h-5 w-5 text-success shrink-0" />
+            {/* Espacio simétrico al back button para mantener el título realmente centrado */}
+            <div className="h-8 w-8 shrink-0" aria-hidden="true" />
           </div>
 
           {/* Progress bar */}
