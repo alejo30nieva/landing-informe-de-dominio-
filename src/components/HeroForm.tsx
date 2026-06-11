@@ -195,7 +195,7 @@ export function HeroForm() {
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.45, ease: "easeOut" }}
-        className="relative w-full max-w-[380px] sm:max-w-md mx-auto lg:mx-0 lg:ml-auto scroll-mt-20"
+        className="relative w-full max-w-md mx-auto lg:mx-0 lg:ml-auto scroll-mt-20"
       >
         <div className="absolute -inset-2 bg-gradient-to-br from-brand-700/15 to-transparent rounded-3xl blur-2xl -z-10" />
         <div className="bg-white border border-ink-300 rounded-2xl shadow-elevate overflow-hidden">

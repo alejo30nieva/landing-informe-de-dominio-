@@ -88,9 +88,10 @@ export function Hero() {
             </div>
           </motion.div>
 
-          {/* Form: en mobile va arriba (más importante), en desktop a la derecha */}
-          {/* flex justify-center fuerza centrado VISIBLE en mobile/tablet */}
-          <div className="order-1 lg:order-2 w-full flex justify-center lg:block px-1 sm:px-0">
+          {/* Form: en mobile va arriba (más importante), en desktop a la derecha.
+              w-full + el max-w-md mx-auto del propio form lo centran igual
+              que las cards de PricingTable (mismo ancho de contenedor). */}
+          <div className="order-1 lg:order-2 w-full">
             <HeroForm />
           </div>
         </div>
