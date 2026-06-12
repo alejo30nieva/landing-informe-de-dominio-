@@ -86,7 +86,9 @@ const TRAMITE_CATEGORIES: { id: Service["category"]; label: string; desc: string
 ];
 
 export default function ServiciosPage() {
-  const informes = SERVICES.filter((s) => s.category === "informes" && s.priceARS);
+  const informes = SERVICES.filter(
+    (s) => s.category === "informes" && s.priceARS && s.slug !== "informe-prueba"
+  );
 
   return (
     <>

@@ -69,9 +69,9 @@ const INCLUDES: Record<string, string[]> = {
     "Avisos por WhatsApp",
   ],
   "informe-compra-segura": [
-    "Dominio + Histórico + Multas",
+    "Histórico de titulares completo",
+    "Informe de Multas nacional",
     "Descuento por combo",
-    "Asesoramiento incluido",
     "Recomendado para compra",
   ],
 };

@@ -101,17 +101,31 @@ export const SERVICES: Service[] = [
   },
   {
     slug: "informe-compra-segura",
-    title: "Combo Compra Segura",
+    title: "Combo Histórico + Multas",
     shortLabel: "Combo",
     shortDesc:
-      "Dominio + Histórico de titulares + Multas. Todo lo que necesitás antes de comprar.",
+      "Histórico de titulares + Informe de Multas a nivel nacional. El combo ideal antes de comprar.",
     longDesc:
-      "Paquete combinado con descuento: incluye Informe de Dominio, Histórico de Titulares e Informe de Multas a nivel nacional. Ahorrás más de $1.000 vs. comprarlos por separado.",
-    priceARS: 39900,
+      "Paquete combinado con descuento: incluye el Informe Histórico de Titulares y el Informe de Multas a nivel nacional. Ahorrás vs. comprarlos por separado ($13.900 + $17.200 = $31.100).",
+    priceARS: 27900,
     delivery: "30–60 minutos",
     icon: "ShoppingCart",
     category: "informes",
     featured: true,
+    selectableInForm: true,
+  },
+  {
+    slug: "informe-prueba",
+    title: "Producto de prueba",
+    shortLabel: "Prueba $1",
+    shortDesc:
+      "Producto de testeo de $1 para verificar que el flujo de pago funciona correctamente.",
+    longDesc:
+      "Producto temporal de prueba. Permite hacer un pago real de $1 ARS para confirmar que MercadoPago, el webhook y las notificaciones funcionan. Eliminar antes de salir a producción definitiva.",
+    priceARS: 1,
+    delivery: "Inmediato (prueba)",
+    icon: "Zap",
+    category: "informes",
     selectableInForm: true,
   },
 
