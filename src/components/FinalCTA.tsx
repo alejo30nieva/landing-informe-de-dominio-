@@ -2,6 +2,9 @@
 import { motion } from "framer-motion";
 import { ArrowRight, MessageCircle, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { buildWhatsAppLink } from "@/lib/whatsapp";
+
+const WA_LINK = buildWhatsAppLink("Hola, quiero consultar por un informe");
 
 export function FinalCTA() {
   return (
@@ -42,7 +45,7 @@ export function FinalCTA() {
             </Button>
             <Button asChild size="xl" variant="secondary">
               <a
-                href="https://wa.me/5493515724733?text=Hola%2C%20quiero%20consultar%20por%20un%20informe"
+                href={WA_LINK}
                 target="_blank"
                 rel="noopener noreferrer"
               >

@@ -52,7 +52,7 @@ export function Hero() {
               <ShieldCheck className="h-3.5 w-3.5" />
               Mandataria matriculada — Córdoba
             </span>
-            <h1 className="mt-5 text-[34px] sm:text-5xl lg:text-[56px] font-extrabold leading-[1.05] text-brand-950 tracking-tight break-words">
+            <h1 className="mt-5 text-[clamp(1.9rem,7vw,3.5rem)] font-extrabold leading-[1.05] text-brand-950 tracking-tight break-words">
               Informe de Dominio{" "}
               <span className="text-brand-700">Automotor</span>
             </h1>

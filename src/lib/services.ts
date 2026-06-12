@@ -114,20 +114,6 @@ export const SERVICES: Service[] = [
     featured: true,
     selectableInForm: true,
   },
-  {
-    slug: "informe-prueba",
-    title: "Producto de prueba",
-    shortLabel: "Prueba $1",
-    shortDesc:
-      "Producto de testeo de $1 para verificar que el flujo de pago funciona correctamente.",
-    longDesc:
-      "Producto temporal de prueba. Permite hacer un pago real de $1 ARS para confirmar que MercadoPago, el webhook y las notificaciones funcionan. Eliminar antes de salir a producción definitiva.",
-    priceARS: 1,
-    delivery: "Inmediato (prueba)",
-    icon: "Zap",
-    category: "informes",
-    selectableInForm: true,
-  },
 
   // Transferencias
   {

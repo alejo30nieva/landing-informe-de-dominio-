@@ -19,7 +19,7 @@ export function LegalLayout({
     <>
       <TopBar />
       <Header />
-      <main className="bg-ink-100/40 min-h-[60vh] py-12 md:py-16">
+      <main className="bg-ink-100/40 min-h-[60dvh] py-12 md:py-16">
         <div className="container mx-auto max-w-3xl">
           <header className="mb-8">
             <h1 className="text-3xl md:text-4xl font-extrabold text-brand-950 tracking-tight">

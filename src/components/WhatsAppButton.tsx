@@ -1,10 +1,15 @@
 "use client";
 import { motion } from "framer-motion";
+import { buildWhatsAppLink } from "@/lib/whatsapp";
+
+const FLOATING_WA_LINK = buildWhatsAppLink(
+  "Hola, quiero consultar un Informe de Dominio"
+);
 
 export function WhatsAppButton() {
   return (
     <motion.a
-      href="https://wa.me/5493515724733?text=Hola%2C%20quiero%20consultar%20un%20Informe%20de%20Dominio"
+      href={FLOATING_WA_LINK}
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Escribinos por WhatsApp"
@@ -13,7 +18,7 @@ export function WhatsAppButton() {
       transition={{ delay: 0.6, duration: 0.5 }}
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
-      className="fixed bottom-4 right-4 sm:bottom-5 sm:right-5 z-50 group"
+      className="fixed bottom-[max(1rem,env(safe-area-inset-bottom))] right-[max(1rem,env(safe-area-inset-right))] z-50 group"
     >
       <span className="absolute -inset-2 rounded-full bg-[#25D366]/30 blur-md animate-pulse" />
       <span className="relative inline-flex items-center justify-center h-12 w-12 sm:h-14 sm:w-14 rounded-full bg-[#25D366] text-white shadow-elevate ring-4 ring-white">

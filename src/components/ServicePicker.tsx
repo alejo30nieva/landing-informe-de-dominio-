@@ -152,7 +152,7 @@ export function ServicePicker({ services, value, onChange, label = "Elegí tu in
             transition={{ duration: 0.18, ease: "easeOut" }}
             className="absolute z-30 left-0 right-0 mt-2 overflow-hidden rounded-xl bg-white border border-ink-300 shadow-elevate"
           >
-            <div className="max-h-[60vh] overflow-y-auto p-1">
+            <div className="max-h-[60dvh] overflow-y-auto p-1">
               {services.map((s) => {
                 const active = s.slug === value;
                 return (

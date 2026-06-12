@@ -8,9 +8,10 @@ import {
   INFORME_PRICE_ARS,
   isMpConfigured,
 } from "@/lib/mercadopago";
-import { generateOrderId, cleanEnv, cleanBaseUrl } from "@/lib/utils";
+import { cleanEnv, cleanBaseUrl } from "@/lib/utils";
 import { rateLimit, getClientIp } from "@/lib/rateLimit";
 import { getServiceBySlug, DEFAULT_FORM_SERVICE } from "@/lib/services";
+import { buildSku } from "@/lib/whatsapp";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -65,7 +66,9 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const orderId = generateOrderId();
+  // El orderId ES el código de compra (SKU) legible por servicio:
+  // GC-DOM-XXXX, GC-HIST-XXXX, etc. Identifica el pedido al instante.
+  const orderId = buildSku(service.slug);
   const amount = service.priceARS ?? INFORME_PRICE_ARS;
   const { patente, email, telefono, cuit, method } = parsed.data;
 
@@ -146,7 +149,7 @@ export async function POST(req: NextRequest) {
         external_reference: orderId,
         statement_descriptor: "GestoriaCBA",
         back_urls: {
-          success: `${baseUrl}/success?order=${orderId}`,
+          success: `${baseUrl}/success?order=${orderId}&svc=${service.slug}`,
           pending: `${baseUrl}/pending?order=${orderId}`,
           failure: `${baseUrl}/pending?order=${orderId}&status=failure`,
         },

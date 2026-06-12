@@ -7,6 +7,7 @@ import { Clock, MessageCircle, FileCheck2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { buildWhatsAppLink } from "@/lib/whatsapp";
 
 function PendingInner() {
   const params = useSearchParams();
@@ -43,7 +44,7 @@ function PendingInner() {
         <div className="mt-7 grid sm:grid-cols-2 gap-3">
           <Button asChild variant="outline" className="w-full">
             <a
-              href="https://wa.me/5493515724733?text=Hola%2C%20tengo%20un%20pago%20pendiente"
+              href={buildWhatsAppLink(`Hola, tengo un pago pendiente. Código: ${order}`)}
               target="_blank"
               rel="noopener noreferrer"
             >

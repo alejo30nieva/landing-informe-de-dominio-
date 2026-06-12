@@ -195,7 +195,7 @@ export function HeroForm() {
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.45, ease: "easeOut" }}
-        className="relative w-full max-w-md mx-auto lg:mx-0 lg:ml-auto scroll-mt-20"
+        className="relative w-[min(100%,28rem)] mx-auto lg:mx-0 lg:ml-auto scroll-mt-20"
       >
         <div className="absolute -inset-2 bg-gradient-to-br from-brand-700/15 to-transparent rounded-3xl blur-2xl -z-10" />
         <div className="bg-white border border-ink-300 rounded-2xl shadow-elevate overflow-hidden">
@@ -210,13 +210,13 @@ export function HeroForm() {
               disabled={step === 1}
               aria-label="Volver"
               className={cn(
-                "inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition-colors",
+                "inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg transition-colors -ml-1.5",
                 step === 1
-                  ? "text-ink-300 cursor-not-allowed opacity-0"
+                  ? "text-ink-300 cursor-not-allowed opacity-0 pointer-events-none"
                   : "text-brand-700 hover:bg-brand-50"
               )}
             >
-              <ArrowLeft className="h-4 w-4" />
+              <ArrowLeft className="h-5 w-5" />
             </button>
             <div className="flex-1 min-w-0 text-center">
               <div className="text-[10.5px] font-bold uppercase tracking-widest text-brand-700">
@@ -227,7 +227,7 @@ export function HeroForm() {
               </h3>
             </div>
             {/* Espacio simétrico al back button para mantener el título realmente centrado */}
-            <div className="h-8 w-8 shrink-0" aria-hidden="true" />
+            <div className="h-11 w-11 shrink-0 -mr-1.5" aria-hidden="true" />
           </div>
 
           {/* Progress bar */}
