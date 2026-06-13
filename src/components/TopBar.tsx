@@ -15,7 +15,7 @@ const items = [
   { icon: BadgeCheck, label: "Mandataria matriculada" },
   { icon: MessageCircle, label: "Atención por WhatsApp" },
   { icon: Lock, label: "Datos protegidos · SSL" },
-  { icon: Clock, label: "Entrega 10–15 minutos" },
+  { icon: Clock, label: "Entrega rápida" },
   { icon: CreditCard, label: "Pago seguro MercadoPago" },
   { icon: MapPin, label: "Válido en toda Argentina" },
 ];

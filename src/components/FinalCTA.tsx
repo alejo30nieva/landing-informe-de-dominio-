@@ -33,8 +33,8 @@ export function FinalCTA() {
             ¿Estás por comprar un usado?
           </h2>
           <p className="mt-3 text-white/80 text-lg">
-            Verificá el vehículo antes de cualquier seña. Te lo mandamos en 10 a
-            15 minutos por email y WhatsApp.
+            Verificá el vehículo antes de cualquier seña. Te lo mandamos por
+            email y WhatsApp.
           </p>
           <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
             <Button asChild size="xl">

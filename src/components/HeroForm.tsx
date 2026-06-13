@@ -355,7 +355,7 @@ export function HeroForm() {
           <div className="px-4 sm:px-5 pb-4 pt-2 border-t border-ink-300/60 bg-ink-100/30">
             <p className="flex items-center justify-center gap-1.5 text-[11px] text-ink-500">
               <Lock className="h-3 w-3" />
-              Pago seguro · MercadoPago · 10–15 min de entrega
+              Pago seguro · MercadoPago
             </p>
           </div>
         </div>
@@ -430,9 +430,6 @@ function StepService({
                       Combo
                     </span>
                   )}
-                </span>
-                <span className="block text-[11px] text-ink-500 truncate">
-                  {s.delivery}
                 </span>
               </span>
               <span className="shrink-0 text-right">

@@ -283,10 +283,6 @@ function InformeCard({ service }: { service: Service }) {
         </span>
         <span className="text-xs text-ink-500">ARS</span>
       </div>
-      <div className="mt-1 inline-flex items-center gap-1.5 text-xs text-ink-500">
-        <Clock className="h-3.5 w-3.5" />
-        {service.delivery}
-      </div>
 
       <p className="mt-3 text-sm text-ink-700 leading-relaxed flex-1">
         {service.shortDesc}
@@ -342,10 +338,6 @@ function TramiteCard({ service }: { service: Service }) {
       <p className="mt-1.5 text-sm text-ink-700 leading-relaxed flex-1">
         {service.shortDesc}
       </p>
-      <div className="mt-4 inline-flex items-center gap-1.5 text-xs text-ink-500">
-        <Clock className="h-3.5 w-3.5" />
-        {service.delivery}
-      </div>
       <a
         href={wa}
         target="_blank"

@@ -143,7 +143,7 @@ export function CheckoutModal({ open, onOpenChange, lead, service }: Props) {
               Pagar por Transferencia o QR
             </DialogTitle>
             <p className="text-[11px] sm:text-xs text-white/70 mt-0.5 leading-snug">
-              0% comisión — recibís el informe en 10–15 min tras enviar el comprobante
+              0% comisión — recibís el informe tras enviar el comprobante
             </p>
           </div>
         </div>
@@ -205,7 +205,7 @@ export function CheckoutModal({ open, onOpenChange, lead, service }: Props) {
             <ShieldCheck className="h-4 w-4 text-success mt-0.5 shrink-0" />
             <p className="text-xs text-ink-700 leading-relaxed">
               Tu pago se procesa de forma cifrada. No almacenamos datos de tu tarjeta.
-              Recibirás el informe por <strong>email y WhatsApp</strong> entre 10 y 15 minutos.
+              Recibirás el informe por <strong>email y WhatsApp</strong>.
             </p>
           </div>
         </div>
@@ -337,7 +337,7 @@ function DeliveryHint() {
   return (
     <p className="text-[11px] text-center text-ink-500 flex items-center justify-center gap-1.5">
       <Clock className="h-3 w-3" />
-      Una vez verificado el pago, recibís el informe entre 10 y 15 minutos.
+      Una vez verificado el pago, te enviamos el informe por email y WhatsApp.
     </p>
   );
 }

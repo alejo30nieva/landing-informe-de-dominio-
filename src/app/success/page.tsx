@@ -64,7 +64,7 @@ function SuccessInner() {
         </h1>
         <p className="mt-2 text-ink-700 text-[15px] leading-relaxed">
           Recibimos tu pago del <strong className="text-brand-950">{serviceTitle}</strong>.
-          Estamos procesándolo y te lo enviaremos en los próximos minutos por
+          Estamos procesándolo y te lo enviaremos a la brevedad por
           email y WhatsApp.
         </p>
 
@@ -110,7 +110,7 @@ function SuccessInner() {
 
         <p className="mt-5 flex items-center justify-center gap-1.5 text-[12px] text-ink-500">
           <FileCheck2 className="h-3.5 w-3.5 text-brand-700" />
-          Entrega estimada: 10 a 15 minutos
+          Te lo enviamos por email y WhatsApp
         </p>
       </motion.div>
     </main>

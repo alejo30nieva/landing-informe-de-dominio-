@@ -168,10 +168,6 @@ export function PricingTable() {
                   </span>
                   <span className="text-xs text-ink-500">ARS</span>
                 </div>
-                <div className="mt-1 inline-flex items-center gap-1.5 text-xs text-ink-500">
-                  <Clock className="h-3.5 w-3.5" />
-                  {s.delivery}
-                </div>
 
                 {/* Description */}
                 <p className="mt-3 text-sm text-ink-700 leading-relaxed">

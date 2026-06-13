@@ -118,9 +118,6 @@ export function ServicePicker({ services, value, onChange, label = "Elegí tu in
               <BadgeCombo />
             )}
           </span>
-          <span className="block text-[11.5px] text-ink-500 mt-0.5 truncate">
-            {selected.delivery}
-          </span>
         </span>
         <span className="text-right shrink-0">
           <span className="block text-[14px] sm:text-[15px] font-bold text-brand-950 whitespace-nowrap">
@@ -182,9 +179,6 @@ export function ServicePicker({ services, value, onChange, label = "Elegí tu in
                         </span>
                         {s.slug === "informe-multas-express" && <BadgeExpress />}
                         {s.slug === "informe-compra-segura" && <BadgeCombo />}
-                      </span>
-                      <span className="block text-[11px] text-ink-500 mt-0.5 truncate">
-                        {s.delivery}
                       </span>
                     </span>
                     <span className="shrink-0 text-right">

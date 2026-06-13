@@ -208,9 +208,6 @@ function SampleSectionBlock({
                   <div className="text-[18px] font-extrabold text-brand-700 whitespace-nowrap">
                     {price}
                   </div>
-                  <div className="text-[10px] text-ink-500 leading-tight">
-                    {service.delivery}
-                  </div>
                 </div>
               )}
             </div>
@@ -260,26 +257,16 @@ function SampleSectionBlock({
                 {service.longDesc}
               </p>
 
-              <div className="mt-5 grid grid-cols-2 gap-3">
-                {price && (
-                  <div className="p-3 rounded-lg bg-brand-50 border border-brand-100">
-                    <div className="text-[10px] uppercase tracking-widest font-semibold text-brand-700">
-                      Precio
-                    </div>
-                    <div className="text-xl font-extrabold text-brand-950 mt-0.5">
-                      {price}
-                    </div>
+              {price && (
+                <div className="mt-5 p-3 rounded-lg bg-brand-50 border border-brand-100">
+                  <div className="text-[10px] uppercase tracking-widest font-semibold text-brand-700">
+                    Precio
                   </div>
-                )}
-                <div className="p-3 rounded-lg bg-ink-100 border border-ink-300/60">
-                  <div className="text-[10px] uppercase tracking-widest font-semibold text-ink-500">
-                    Entrega
-                  </div>
-                  <div className="text-sm font-bold text-brand-950 mt-0.5 leading-tight">
-                    {service.delivery}
+                  <div className="text-xl font-extrabold text-brand-950 mt-0.5">
+                    {price}
                   </div>
                 </div>
-              </div>
+              )}
 
               <div className="mt-5 flex flex-col gap-2">
                 {service.selectableInForm ? (
