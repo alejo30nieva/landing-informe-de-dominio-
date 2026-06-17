@@ -28,10 +28,12 @@ export function localBusinessSchema() {
     ],
     address: {
       "@type": "PostalAddress",
+      streetAddress: "Duarte Quirós 4051",
       addressLocality: "Córdoba",
       addressRegion: "Córdoba",
       addressCountry: "AR",
     },
+    email: "gestoriacordobaluci@gmail.com",
     geo: {
       "@type": "GeoCoordinates",
       latitude: -31.4201,
@@ -41,8 +43,8 @@ export function localBusinessSchema() {
       {
         "@type": "OpeningHoursSpecification",
         dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-        opens: "09:00",
-        closes: "18:00",
+        opens: "10:00",
+        closes: "19:00",
       },
     ],
     serviceType: [
@@ -59,7 +61,10 @@ export function localBusinessSchema() {
       bestRating: "5",
       worstRating: "1",
     },
-    sameAs: ["https://wa.me/5493515724733"],
+    sameAs: [
+      "https://wa.me/5493515724733",
+      "https://www.instagram.com/p/CPCJkdpgH1L/?igsh=aDZjbGpleGltc2lo",
+    ],
   };
 }
 

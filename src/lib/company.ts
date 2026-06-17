@@ -3,15 +3,16 @@
  * Reemplazar por los reales antes de publicar.
  */
 export const COMPANY = {
-  legalName: "Gestoría Córdoba S.R.L.",
+  legalName: "Gestoría Córdoba",
   tradeName: "Gestoría Córdoba",
-  cuit: "30-71234567-8",
-  address: "Av. Colón 1234, Piso 3, Of. B, Córdoba, Argentina. CP: 5000",
-  email: "contacto@gestoriacordoba.com",
+  cuit: "",
+  address: "Duarte Quirós 4051, Córdoba Capital",
+  email: "gestoriacordobaluci@gmail.com",
   waPhone: "5493515724733", // sin signos para wa.me
   waDisplay: "+54 9 3515 72-4733",
   city: "Córdoba",
-  hours: "Lun a Vie de 9 a 18 hs",
+  hours: "Lun a Vie de 10 a 19 hs",
+  instagram: "https://www.instagram.com/p/CPCJkdpgH1L/?igsh=aDZjbGpleGltc2lo",
 };
 
 export const SOURCES = [

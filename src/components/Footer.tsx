@@ -8,6 +8,7 @@ import {
   ShieldCheck,
   Phone,
   ExternalLink,
+  Instagram,
 } from "lucide-react";
 import { COMPANY, SOURCES } from "@/lib/company";
 
@@ -92,6 +93,21 @@ export function Footer() {
                   Horarios
                   <br />
                   <span className="font-semibold">{COMPANY.hours}</span>
+                </span>
+              </li>
+              <li className="inline-flex items-start gap-2.5 text-white/80">
+                <Instagram className="h-4 w-4 mt-0.5 text-brand-500" />
+                <span>
+                  Instagram
+                  <br />
+                  <a
+                    href={COMPANY.instagram}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-semibold hover:text-white transition-colors"
+                  >
+                    @gestoriacordoba
+                  </a>
                 </span>
               </li>
             </ul>

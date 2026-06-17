@@ -389,7 +389,7 @@ function StepService({
       <p className="text-[12.5px] text-ink-700 mb-3">
         Tocá el informe que necesitás.
       </p>
-      <div className="grid gap-2.5">
+      <div className="grid grid-cols-1 gap-2.5">
         {services.map((s) => {
           const Icon = SVC_ICONS[s.icon] ?? FileText;
           const active = s.slug === selectedSlug;
