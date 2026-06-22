@@ -16,7 +16,13 @@ import {
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { SERVICES, buildWaUrl, formatPrice, type Service } from "@/lib/services";
+import {
+  SERVICES,
+  buildWaUrl,
+  formatPrice,
+  getComboSavings,
+  type Service,
+} from "@/lib/services";
 
 const ICONS: Record<string, any> = {
   FileText,
@@ -27,14 +33,14 @@ const ICONS: Record<string, any> = {
   ShoppingCart,
 };
 
-// Lista ordenada para destacar en la home (mismo orden que el form).
+// Combo PRIMERO (recomendado); nominal ÚLTIMO (casi nadie lo pide).
 const HIGHLIGHTED_ORDER = [
+  "informe-compra-segura",
   "informe-dominio",
   "informe-historico-titulares",
-  "informe-nominal",
   "informe-multas",
   "informe-multas-express",
-  "informe-compra-segura",
+  "informe-nominal",
 ];
 
 const INCLUDES: Record<string, string[]> = {
@@ -80,6 +86,7 @@ export function PricingTable() {
   const items = HIGHLIGHTED_ORDER.map((slug) =>
     SERVICES.find((s) => s.slug === slug)
   ).filter(Boolean) as Service[];
+  const comboSavings = getComboSavings();
 
   return (
     <section id="informes" className="py-16 md:py-24 bg-ink-100/50 scroll-mt-24">
@@ -104,7 +111,7 @@ export function PricingTable() {
             const includes = INCLUDES[s.slug] ?? [];
             const isExpress = s.slug === "informe-multas-express";
             const isCombo = s.slug === "informe-compra-segura";
-            const isFeatured = s.slug === "informe-historico-titulares";
+            const isFeatured = isCombo; // el combo es el recomendado
 
             return (
               <motion.div
@@ -120,19 +127,14 @@ export function PricingTable() {
                 }`}
               >
                 {/* Badges */}
-                {isFeatured && (
-                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 inline-flex items-center px-2.5 py-0.5 rounded-full bg-brand-700 text-white text-[10px] font-bold uppercase tracking-wider">
-                    Más pedido
+                {isCombo && (
+                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-success text-white text-[10px] font-bold uppercase tracking-wider whitespace-nowrap">
+                    ★ Recomendado
                   </span>
                 )}
                 {isExpress && (
                   <span className="absolute -top-3 left-6 inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-warning text-white text-[10px] font-bold uppercase tracking-wider">
                     <Zap className="h-3 w-3" /> Express
-                  </span>
-                )}
-                {isCombo && (
-                  <span className="absolute -top-3 left-6 inline-flex items-center px-2 py-0.5 rounded-full bg-success text-white text-[10px] font-bold uppercase tracking-wider">
-                    Combo ahorro
                   </span>
                 )}
 
@@ -168,6 +170,13 @@ export function PricingTable() {
                   </span>
                   <span className="text-xs text-ink-500">ARS</span>
                 </div>
+
+                {/* Ahorro del combo */}
+                {isCombo && comboSavings > 0 && (
+                  <div className="mt-2 inline-flex items-center self-start gap-1.5 px-2.5 py-1 rounded-lg bg-success/10 border border-success/20 text-success text-[12.5px] font-bold">
+                    Ahorrás ${comboSavings.toLocaleString("es-AR")}
+                  </div>
+                )}
 
                 {/* Description */}
                 <p className="mt-3 text-sm text-ink-700 leading-relaxed">

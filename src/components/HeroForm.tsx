@@ -48,23 +48,25 @@ const SVC_ICONS: Record<string, any> = {
   ShoppingCart,
 };
 
-const TOTAL_STEPS = 5;
+const TOTAL_STEPS = 6;
 
-type StepKey = 1 | 2 | 3 | 4 | 5;
+type StepKey = 1 | 2 | 3 | 4 | 5 | 6;
 const STEP_TITLES: Record<StepKey, string> = {
   1: "Elegí tu informe",
-  2: "Patente del vehículo",
-  3: "¿A qué email lo enviamos?",
-  4: "Tu WhatsApp",
-  5: "Confirmá y pagá",
+  2: "¿Cómo te llamás?",
+  3: "Patente del vehículo",
+  4: "¿A qué email lo enviamos?",
+  5: "Tu WhatsApp",
+  6: "Confirmá y pagá",
 };
 
 const FIELDS_BY_STEP: Record<StepKey, (keyof LeadInput)[]> = {
   1: ["serviceSlug"],
-  2: ["patente"],
-  3: ["email"],
-  4: ["telefono"],
-  5: ["cuit", "terms"],
+  2: ["nombre"],
+  3: ["patente"],
+  4: ["email"],
+  5: ["telefono"],
+  6: ["cuit", "terms"],
 };
 
 export function HeroForm() {
@@ -88,6 +90,7 @@ export function HeroForm() {
     mode: "onChange",
     defaultValues: {
       serviceSlug: DEFAULT_FORM_SERVICE,
+      nombre: "",
       patente: "",
       email: "",
       telefono: "",
@@ -276,6 +279,15 @@ export function HeroForm() {
                 )}
 
                 {step === 2 && (
+                  <StepNombre
+                    register={register}
+                    error={errors.nombre?.message}
+                    ok={showOk("nombre")}
+                    onEnter={goNext}
+                  />
+                )}
+
+                {step === 3 && (
                   <StepPatente
                     register={register}
                     error={errors.patente?.message}
@@ -292,7 +304,7 @@ export function HeroForm() {
                   />
                 )}
 
-                {step === 3 && (
+                {step === 4 && (
                   <StepEmail
                     register={register}
                     error={errors.email?.message}
@@ -301,7 +313,7 @@ export function HeroForm() {
                   />
                 )}
 
-                {step === 4 && (
+                {step === 5 && (
                   <StepTelefono
                     register={register}
                     error={errors.telefono?.message}
@@ -310,7 +322,7 @@ export function HeroForm() {
                   />
                 )}
 
-                {step === 5 && (
+                {step === 6 && (
                   <StepConfirm
                     service={selectedService}
                     price={price}
@@ -326,8 +338,8 @@ export function HeroForm() {
               </motion.div>
             </AnimatePresence>
 
-            {/* Navegación inferior — sólo en pasos 2,3,4 (el 1 auto-avanza y el 5 tiene su propio botón) */}
-            {step >= 2 && step <= 4 && (
+            {/* Navegación inferior — pasos 2-5 (el 1 auto-avanza y el 6 tiene su propio botón) */}
+            {step >= 2 && step <= 5 && (
               <div className="mt-4 flex items-center gap-2">
                 <Button
                   type="button"
@@ -447,6 +459,58 @@ function StepService({
       <p className="mt-3 text-[10.5px] text-center text-ink-500">
         Tocá un informe para continuar
       </p>
+    </div>
+  );
+}
+
+function StepNombre({
+  register,
+  error,
+  ok,
+  onEnter,
+}: {
+  register: any;
+  error?: string;
+  ok?: boolean;
+  onEnter: () => void;
+}) {
+  const ref = useRef<HTMLInputElement | null>(null);
+  useEffect(() => {
+    ref.current?.focus();
+  }, []);
+
+  return (
+    <div>
+      <p className="text-[12.5px] text-ink-700 mb-3 flex items-center gap-1.5">
+        <IdCard className="h-4 w-4 text-brand-700" />
+        Para identificar tu pedido al instante.
+      </p>
+      <div className="relative">
+        <Input
+          {...register("nombre")}
+          ref={(el: HTMLInputElement) => {
+            register("nombre").ref(el);
+            ref.current = el;
+          }}
+          type="text"
+          autoComplete="name"
+          autoCapitalize="words"
+          placeholder="Nombre y apellido"
+          aria-invalid={!!error}
+          invalid={!!error}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              onEnter();
+            }
+          }}
+          className="h-14 pr-9"
+        />
+        {ok && (
+          <CheckCircle2 className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-success" />
+        )}
+      </div>
+      {error && <p className="mt-1.5 text-[11px] text-danger">{error}</p>}
     </div>
   );
 }
@@ -662,6 +726,7 @@ function StepConfirm({
           {service.title}
         </div>
         <div className="mt-2 grid gap-1 text-[11.5px] text-ink-700">
+          <SummaryLine label="Nombre" value={values.nombre} />
           <SummaryLine label="Patente" value={values.patente} mono />
           <SummaryLine label="Email" value={values.email} />
           <SummaryLine label="WhatsApp" value={values.telefono} />

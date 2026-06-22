@@ -70,7 +70,7 @@ export async function POST(req: NextRequest) {
   // GC-DOM-XXXX, GC-HIST-XXXX, etc. Identifica el pedido al instante.
   const orderId = buildSku(service.slug);
   const amount = service.priceARS ?? INFORME_PRICE_ARS;
-  const { patente, email, telefono, cuit, method } = parsed.data;
+  const { nombre, patente, email, telefono, cuit, method } = parsed.data;
 
   // 1) Persistimos lead (si está configurado Supabase). No bloqueamos si falla.
   let supaSaved = false;
@@ -80,6 +80,7 @@ export async function POST(req: NextRequest) {
       order_id: orderId,
       service_slug: service.slug,
       service_title: service.title,
+      nombre,
       patente,
       email,
       telefono,
@@ -149,7 +150,11 @@ export async function POST(req: NextRequest) {
         external_reference: orderId,
         statement_descriptor: "GestoriaCBA",
         back_urls: {
-          success: `${baseUrl}/success?order=${orderId}&svc=${service.slug}`,
+          // pat + nom (encodeados) viajan a la pantalla de éxito para armar
+          // el mensaje de WhatsApp personalizado (sobreviven a recargas).
+          success: `${baseUrl}/success?order=${orderId}&svc=${service.slug}&pat=${encodeURIComponent(
+            patente
+          )}&nom=${encodeURIComponent(nombre)}`,
           pending: `${baseUrl}/pending?order=${orderId}`,
           failure: `${baseUrl}/pending?order=${orderId}&status=failure`,
         },
@@ -158,6 +163,7 @@ export async function POST(req: NextRequest) {
         metadata: {
           order_id: orderId,
           service_slug: service.slug,
+          nombre,
           patente,
           email,
           cuit: cuit || "",

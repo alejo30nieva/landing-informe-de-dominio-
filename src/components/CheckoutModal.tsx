@@ -24,6 +24,7 @@ import { Button } from "@/components/ui/button";
 import { formatARS } from "@/lib/utils";
 import type { LeadInput } from "@/lib/validations";
 import type { Service } from "@/lib/services";
+import { buildWhatsAppLink } from "@/lib/whatsapp";
 
 type Method = "transferencia" | "qr";
 
@@ -228,14 +229,20 @@ function CheckoutSkeleton() {
   );
 }
 
-function buildWaComprobante(orderId: string, amount: number, patente?: string) {
-  const phone = (process.env.NEXT_PUBLIC_WA_PHONE ?? "5493515724733").replace(/\D/g, "");
+function buildWaComprobante(
+  orderId: string,
+  amount: number,
+  patente?: string,
+  nombre?: string,
+  serviceTitle?: string
+) {
   const msg =
-    `Hola! Adjunto el comprobante de pago del Informe de Dominio.\n` +
+    `${nombre ? `Hola! Soy ${nombre}. ` : "Hola! "}` +
+    `Adjunto el comprobante de pago del ${serviceTitle ?? "informe"}.\n` +
     `Orden: ${orderId}\n` +
     (patente ? `Patente: ${patente}\n` : "") +
     `Monto: $${amount.toLocaleString("es-AR")}`;
-  return `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
+  return buildWhatsAppLink(msg);
 }
 
 function MethodPanel({
@@ -259,7 +266,13 @@ function MethodPanel({
 
   const orderId = data.orderId ?? "—";
   const amount = data.amount ?? price;
-  const waUrl = buildWaComprobante(orderId, amount, lead?.patente);
+  const waUrl = buildWaComprobante(
+    orderId,
+    amount,
+    lead?.patente,
+    (lead as any)?.nombre,
+    data?.serviceTitle
+  );
 
   // QR
   if (method === "qr") {

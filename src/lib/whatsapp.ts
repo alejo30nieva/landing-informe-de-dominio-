@@ -58,12 +58,20 @@ export function serviceSlugFromSku(sku: string | null | undefined): string | nul
 }
 
 /**
- * Mensaje POST-COMPRA. El cliente ya pagó; incluye su SKU para identificar
- * el pedido al instante.
+ * Mensaje POST-COMPRA. El cliente ya pagó; incluye nombre + patente + SKU
+ * para identificar el pedido al instante.
  */
-export function postPurchaseMessage(serviceTitle: string, sku: string): string {
+export function postPurchaseMessage(opts: {
+  serviceTitle: string;
+  sku: string;
+  nombre?: string;
+  patente?: string;
+}): string {
+  const { serviceTitle, sku, nombre, patente } = opts;
+  const saludo = nombre ? `¡Hola! Soy ${nombre}.` : "¡Hola!";
+  const vehiculo = patente ? ` para la patente ${patente}` : "";
   return (
-    `¡Hola! Acabo de comprar el ${serviceTitle}. ` +
+    `${saludo} Acabo de comprar el ${serviceTitle}${vehiculo}. ` +
     `Mi código de compra es ${sku}. Quedo atento al informe. ¡Gracias!`
   );
 }
@@ -81,8 +89,13 @@ export function qrServiceMessage(service: Service): string {
 }
 
 /** Link de WhatsApp post-compra listo para el botón de la pantalla de éxito. */
-export function postPurchaseWhatsAppLink(serviceTitle: string, sku: string): string {
-  return buildWhatsAppLink(postPurchaseMessage(serviceTitle, sku));
+export function postPurchaseWhatsAppLink(opts: {
+  serviceTitle: string;
+  sku: string;
+  nombre?: string;
+  patente?: string;
+}): string {
+  return buildWhatsAppLink(postPurchaseMessage(opts));
 }
 
 /** Link de WhatsApp para un QR de servicio. */

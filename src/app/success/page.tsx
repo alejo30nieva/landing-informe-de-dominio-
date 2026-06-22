@@ -28,7 +28,9 @@ function SuccessInner() {
   // El servicio viene en ?svc=; si no, lo derivamos del prefijo del SKU.
   const svcSlug = params.get("svc") ?? serviceSlugFromSku(sku);
   const serviceTitle = serviceTitleFromSlug(svcSlug);
-  const waLink = postPurchaseWhatsAppLink(serviceTitle, sku);
+  const nombre = params.get("nom") ?? undefined;
+  const patente = params.get("pat") ?? undefined;
+  const waLink = postPurchaseWhatsAppLink({ serviceTitle, sku, nombre, patente });
 
   const [copied, setCopied] = useState(false);
   const copySku = async () => {

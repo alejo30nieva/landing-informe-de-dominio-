@@ -264,11 +264,38 @@ export function formatPrice(s: Service): string | undefined {
 }
 
 /**
+ * Orden de display en el formulario y la tabla de precios.
+ * El combo va PRIMERO (recomendado); el nominal último (casi nadie lo pide).
+ */
+export const FORM_DISPLAY_ORDER = [
+  "informe-compra-segura", // Combo — recomendado, primero
+  "informe-dominio",
+  "informe-historico-titulares",
+  "informe-multas",
+  "informe-multas-express",
+  "informe-nominal", // último
+];
+
+/**
  * Servicios que pueden seleccionarse y comprarse desde el formulario del hero.
- * Devueltos en el orden de prioridad de display.
+ * Devueltos con el combo primero (recomendado).
  */
 export function getFormSelectableServices(): Service[] {
-  return SERVICES.filter((s) => s.selectableInForm);
+  const rank = (slug: string) => {
+    const i = FORM_DISPLAY_ORDER.indexOf(slug);
+    return i === -1 ? 999 : i;
+  };
+  return SERVICES.filter((s) => s.selectableInForm).sort(
+    (a, b) => rank(a.slug) - rank(b.slug)
+  );
+}
+
+/** Ahorro del combo vs comprar Histórico + Multas por separado (en ARS). */
+export function getComboSavings(): number {
+  const combo = getServiceBySlug("informe-compra-segura")?.priceARS ?? 0;
+  const hist = getServiceBySlug("informe-historico-titulares")?.priceARS ?? 0;
+  const multas = getServiceBySlug("informe-multas")?.priceARS ?? 0;
+  return Math.max(0, hist + multas - combo);
 }
 
 /** Slug por defecto del formulario. */

@@ -9,6 +9,7 @@ create table if not exists public.leads (
   order_id text not null unique,
   service_slug text,
   service_title text,
+  nombre text,
   patente text not null,
   email text not null,
   telefono text,

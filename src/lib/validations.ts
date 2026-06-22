@@ -7,6 +7,11 @@ export const leadSchema = z.object({
     .string()
     .min(1, "Elegí qué informe necesitás")
     .max(60),
+  nombre: z
+    .string()
+    .min(2, "Ingresá tu nombre")
+    .max(80, "Nombre demasiado largo")
+    .transform((v) => v.trim()),
   patente: z
     .string()
     .min(6, "La patente debe tener al menos 6 caracteres")
