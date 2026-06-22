@@ -1,7 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Menu, X, FileCheck2 } from "lucide-react";
+import Image from "next/image";
+import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -34,18 +35,19 @@ export function Header() {
       )}
     >
       <div className="container mx-auto flex h-16 items-center justify-between gap-2 max-w-full">
-        <Link href="/" className="flex items-center gap-2 group min-w-0 flex-1 overflow-hidden">
-          <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brand-700 text-white shadow-soft">
-            <FileCheck2 className="h-5 w-5" />
-          </span>
-          <div className="leading-tight min-w-0 flex-1 overflow-hidden">
-            <div className="font-bold text-brand-950 text-[14px] sm:text-[15px] tracking-tight truncate">
-              Gestoría Córdoba
-            </div>
-            <div className="hidden xs:block text-[11px] text-ink-500 -mt-0.5 truncate">
-              Informe de Dominio Automotor
-            </div>
-          </div>
+        <Link
+          href="/"
+          className="flex items-center shrink-0 min-w-0"
+          aria-label="Gestoría Córdoba — Inicio"
+        >
+          <Image
+            src="/logo.jpg"
+            alt="Gestoría Córdoba — Lucía Herrera, Mandataria"
+            width={300}
+            height={180}
+            priority
+            className="h-11 sm:h-12 w-auto object-contain"
+          />
         </Link>
 
         <nav className="hidden lg:flex items-center gap-7">
