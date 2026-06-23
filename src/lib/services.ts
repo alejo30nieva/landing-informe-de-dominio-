@@ -107,7 +107,7 @@ export const SERVICES: Service[] = [
       "Histórico de titulares + Informe de Multas a nivel nacional. El combo ideal antes de comprar.",
     longDesc:
       "Paquete combinado con descuento: incluye el Informe Histórico de Titulares y el Informe de Multas a nivel nacional. Ahorrás vs. comprarlos por separado ($13.900 + $17.200 = $31.100).",
-    priceARS: 27900,
+    priceARS: 25500,
     delivery: "30–60 minutos",
     icon: "ShoppingCart",
     category: "informes",

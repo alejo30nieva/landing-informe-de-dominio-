@@ -33,6 +33,7 @@ import { maskPatente, formatARS } from "@/lib/utils";
 import {
   getFormSelectableServices,
   getServiceBySlug,
+  getComboSavings,
   DEFAULT_FORM_SERVICE,
   type Service,
 } from "@/lib/services";
@@ -396,6 +397,7 @@ function StepService({
   selectedSlug: string;
   onSelect: (slug: string) => void;
 }) {
+  const comboSavings = getComboSavings();
   return (
     <div>
       <p className="text-[12.5px] text-ink-700 mb-3">
@@ -445,9 +447,19 @@ function StepService({
                 </span>
               </span>
               <span className="shrink-0 text-right">
+                {isCombo && (
+                  <span className="block text-[8.5px] font-bold uppercase tracking-wider text-brand-700 mb-0.5 whitespace-nowrap">
+                    ★ Recomendado
+                  </span>
+                )}
                 <span className="block text-[14px] font-bold text-brand-950 whitespace-nowrap">
                   {s.priceARS ? `$${s.priceARS.toLocaleString("es-AR")}` : "—"}
                 </span>
+                {isCombo && comboSavings > 0 && (
+                  <span className="block text-[10.5px] font-bold text-success whitespace-nowrap mt-0.5">
+                    Ahorrás ${comboSavings.toLocaleString("es-AR")}
+                  </span>
+                )}
               </span>
               {active && (
                 <CheckCircle2 className="h-4 w-4 text-brand-700 shrink-0" />
