@@ -109,7 +109,7 @@ export async function POST(req: NextRequest) {
       banco: cleanEnv(process.env.BANK_NAME, "Mercado Pago"),
       alias: cleanEnv(process.env.BANK_ALIAS, "GESTORIA.CBA.MP"),
       cbu: cleanEnv(process.env.BANK_CBU, "0000003100012345678901"),
-      qrUrl: cleanEnv(process.env.BANK_QR_URL) || null,
+      qrUrl: cleanEnv(process.env.BANK_QR_URL) || "/qr-pago.png",
     });
   }
 
