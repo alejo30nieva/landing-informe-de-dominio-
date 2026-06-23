@@ -45,11 +45,12 @@ export default function QrPage() {
               Códigos QR
             </span>
             <h1 className="mt-4 text-3xl md:text-4xl font-extrabold text-brand-950 tracking-tight">
-              Pedí tu informe escaneando
+              Pagá o pedí escaneando
             </h1>
             <p className="mt-3 text-ink-700">
-              Escaneá el QR del informe que necesitás y se abre WhatsApp con el
-              mensaje listo. Ideal para imprimir o mostrar en el local.
+              Escaneá el QR de Mercado Pago para pagar, o el QR del informe que
+              necesitás para pedirlo por WhatsApp. Ideal para imprimir o mostrar
+              en el local.
             </p>
             <button
               type="button"
@@ -59,6 +60,41 @@ export default function QrPage() {
               <Download className="h-4 w-4" />
               Imprimir todos
             </button>
+          </div>
+
+          {/* QR DE COBRO de Mercado Pago — destacado arriba */}
+          <div className="max-w-md mx-auto mb-10 md:mb-14">
+            <div className="rounded-2xl border-2 border-brand-700/20 bg-white p-6 text-center shadow-elevate break-inside-avoid">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-50 text-brand-700 text-[11px] font-bold uppercase tracking-wider">
+                Pagar con Mercado Pago
+              </div>
+              <h2 className="mt-3 text-xl font-extrabold text-brand-950">
+                Escaneá y pagá
+              </h2>
+              <p className="mt-1 text-[13px] text-ink-700">
+                Con MercadoPago, Modo, BNA+, Naranja X o cualquier billetera con
+                QR. Ingresá el monto del informe que pediste.
+              </p>
+              <div className="mt-4 inline-block p-3 rounded-xl bg-white border border-ink-300 shadow-soft">
+                <img
+                  src="/qr-pago.png"
+                  alt="QR de cobro de Mercado Pago — Gestoría Córdoba"
+                  className="h-60 w-60 sm:h-64 sm:w-64 object-contain"
+                />
+              </div>
+              <p className="mt-3 text-[11px] text-ink-500">
+                Titular: Lucía Belén Herrera · Gestoría Córdoba
+              </p>
+            </div>
+          </div>
+
+          <div className="text-center max-w-2xl mx-auto mb-6 print:hidden">
+            <h2 className="text-lg font-bold text-brand-950">
+              O pedí tu informe por WhatsApp
+            </h2>
+            <p className="mt-1 text-sm text-ink-700">
+              Escaneá el QR del informe que necesitás.
+            </p>
           </div>
 
           <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5 max-w-5xl mx-auto">
