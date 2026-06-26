@@ -27,9 +27,11 @@ export function getSupabaseAdmin(): SupabaseClient {
 export type LeadRecord = {
   id?: string;
   order_id: string;
+  nombre?: string | null;
   patente: string;
+  dni?: string | null;
   email: string;
-  cuit?: string | null;
+  telefono?: string | null;
   amount: number;
   status: "pending" | "approved" | "rejected" | "in_process" | "cancelled";
   payment_method?: string | null;

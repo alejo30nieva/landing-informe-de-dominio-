@@ -67,7 +67,7 @@ const FIELDS_BY_STEP: Record<StepKey, (keyof LeadInput)[]> = {
   3: ["patente"],
   4: ["email"],
   5: ["telefono"],
-  6: ["cuit", "terms"],
+  6: ["dni", "terms"],
 };
 
 export function HeroForm() {
@@ -95,7 +95,7 @@ export function HeroForm() {
       patente: "",
       email: "",
       telefono: "",
-      cuit: "",
+      dni: "",
       terms: false as unknown as true,
       website: "",
     },
@@ -331,7 +331,7 @@ export function HeroForm() {
                     register={register}
                     errors={errors}
                     control={control}
-                    okCuit={showOk("cuit")}
+                    okCuit={showOk("dni")}
                     redirecting={redirecting || isSubmitting}
                     onAltPayment={onAltPayment}
                   />
@@ -740,33 +740,34 @@ function StepConfirm({
         <div className="mt-2 grid gap-1 text-[11.5px] text-ink-700">
           <SummaryLine label="Nombre" value={values.nombre} />
           <SummaryLine label="Patente" value={values.patente} mono />
+          <SummaryLine label="DNI" value={values.dni} mono />
           <SummaryLine label="Email" value={values.email} />
           <SummaryLine label="WhatsApp" value={values.telefono} />
         </div>
       </div>
 
-      {/* CUIT opcional */}
+      {/* DNI (requerido para emitir el informe) */}
       <div className="space-y-1">
         <Label className="flex items-center justify-between text-[12.5px]">
-          <span>CUIT / CUIL</span>
-          <span className="text-[11px] text-ink-500 font-normal">Opcional</span>
+          <span>DNI del solicitante</span>
         </Label>
         <div className="relative">
           <Input
-            id="cuit"
+            id="dni"
             inputMode="numeric"
-            placeholder="20-12345678-9"
-            aria-invalid={!!errors.cuit}
-            invalid={!!errors.cuit}
+            autoComplete="off"
+            placeholder="12345678"
+            aria-invalid={!!errors.dni}
+            invalid={!!errors.dni}
             className="h-11 pr-9"
-            {...register("cuit")}
+            {...register("dni")}
           />
           {okCuit && (
             <CheckCircle2 className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-success" />
           )}
         </div>
-        {errors.cuit && (
-          <p className="text-[11px] text-danger">{errors.cuit.message}</p>
+        {errors.dni && (
+          <p className="text-[11px] text-danger">{errors.dni.message}</p>
         )}
       </div>
 

@@ -57,23 +57,37 @@ export function serviceSlugFromSku(sku: string | null | undefined): string | nul
   return entry ? entry[0] : null;
 }
 
-/**
- * Mensaje POST-COMPRA. El cliente ya pagó; incluye nombre + patente + SKU
- * para identificar el pedido al instante.
- */
-export function postPurchaseMessage(opts: {
+export type PurchaseData = {
   serviceTitle: string;
   sku: string;
   nombre?: string;
   patente?: string;
-}): string {
-  const { serviceTitle, sku, nombre, patente } = opts;
-  const saludo = nombre ? `¡Hola! Soy ${nombre}.` : "¡Hola!";
-  const vehiculo = patente ? ` para la patente ${patente}` : "";
-  return (
-    `${saludo} Acabo de comprar el ${serviceTitle}${vehiculo}. ` +
-    `Mi código de compra es ${sku}. Quedo atento al informe. ¡Gracias!`
-  );
+  dni?: string;
+  telefono?: string;
+  email?: string;
+};
+
+/**
+ * Mensaje POST-COMPRA. El cliente ya pagó; incluye TODOS los datos del
+ * formulario para que la gestoría pueda emitir el informe al instante:
+ * servicio, nombre, patente, DNI, teléfono, email y el código de compra.
+ */
+export function postPurchaseMessage(opts: PurchaseData): string {
+  const { serviceTitle, sku, nombre, patente, dni, telefono, email } = opts;
+  const lines = [
+    `¡Hola! Acabo de pagar mi informe. Estos son mis datos:`,
+    ``,
+    `🧾 Servicio: ${serviceTitle}`,
+    nombre ? `👤 Nombre: ${nombre}` : null,
+    patente ? `🚗 Patente: ${patente}` : null,
+    dni ? `🪪 DNI: ${dni}` : null,
+    telefono ? `📱 Teléfono: ${telefono}` : null,
+    email ? `📧 Email: ${email}` : null,
+    `🔖 Código de compra: ${sku}`,
+    ``,
+    `Quedo atento al informe. ¡Gracias!`,
+  ].filter(Boolean);
+  return lines.join("\n");
 }
 
 /**
@@ -89,12 +103,7 @@ export function qrServiceMessage(service: Service): string {
 }
 
 /** Link de WhatsApp post-compra listo para el botón de la pantalla de éxito. */
-export function postPurchaseWhatsAppLink(opts: {
-  serviceTitle: string;
-  sku: string;
-  nombre?: string;
-  patente?: string;
-}): string {
+export function postPurchaseWhatsAppLink(opts: PurchaseData): string {
   return buildWhatsAppLink(postPurchaseMessage(opts));
 }
 

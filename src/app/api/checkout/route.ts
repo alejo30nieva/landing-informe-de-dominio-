@@ -70,7 +70,7 @@ export async function POST(req: NextRequest) {
   // GC-DOM-XXXX, GC-HIST-XXXX, etc. Identifica el pedido al instante.
   const orderId = buildSku(service.slug);
   const amount = service.priceARS ?? INFORME_PRICE_ARS;
-  const { nombre, patente, email, telefono, cuit, method } = parsed.data;
+  const { nombre, patente, email, telefono, dni, method } = parsed.data;
 
   // 1) Persistimos lead (si está configurado Supabase). No bloqueamos si falla.
   let supaSaved = false;
@@ -82,9 +82,9 @@ export async function POST(req: NextRequest) {
       service_title: service.title,
       nombre,
       patente,
+      dni,
       email,
       telefono,
-      cuit: cuit || null,
       amount,
       status: "pending",
       payment_method: method,
@@ -96,6 +96,21 @@ export async function POST(req: NextRequest) {
   } catch (e) {
     console.warn("[checkout] supabase no configurado o error:", (e as Error).message);
   }
+
+  // 1b) Google Sheets (vía webhook de Apps Script). No bloquea si falla.
+  await pushToGoogleSheets({
+    fecha: new Date().toLocaleString("es-AR", { timeZone: "America/Argentina/Cordoba" }),
+    orden: orderId,
+    servicio: service.title,
+    nombre,
+    patente,
+    dni,
+    telefono,
+    email,
+    monto: amount,
+    metodo: method,
+    estado: "pendiente",
+  });
 
   // 2) Para transferencia / QR devolvemos datos bancarios.
   //    Sanitizamos los valores por si el usuario los cargó con < > o espacios.
@@ -128,10 +143,10 @@ export async function POST(req: NextRequest) {
 
   try {
     const pref = getPreferenceClient();
-    const baseUrl = cleanBaseUrl(
-      process.env.NEXT_PUBLIC_BASE_URL,
-      `${req.nextUrl.protocol}//${req.nextUrl.host}`
-    );
+    // MercadoPago EXIGE https en back_urls para que auto_return funcione.
+    // Forzamos https aunque el host venga sin protocolo o como http (proxy Vercel).
+    let baseUrl = cleanBaseUrl(process.env.NEXT_PUBLIC_BASE_URL) || `https://${req.nextUrl.host}`;
+    if (baseUrl.startsWith("http://")) baseUrl = baseUrl.replace("http://", "https://");
 
     const preference = await pref.create({
       body: {
@@ -150,11 +165,9 @@ export async function POST(req: NextRequest) {
         external_reference: orderId,
         statement_descriptor: "GestoriaCBA",
         back_urls: {
-          // pat + nom (encodeados) viajan a la pantalla de éxito para armar
-          // el mensaje de WhatsApp personalizado (sobreviven a recargas).
-          success: `${baseUrl}/success?order=${orderId}&svc=${service.slug}&pat=${encodeURIComponent(
-            patente
-          )}&nom=${encodeURIComponent(nombre)}`,
+          // back_url limpia (solo el SKU) para máxima fiabilidad del auto_return.
+          // Los datos completos del pedido se traen en /success desde Supabase.
+          success: `${baseUrl}/success?order=${orderId}`,
           pending: `${baseUrl}/pending?order=${orderId}`,
           failure: `${baseUrl}/pending?order=${orderId}&status=failure`,
         },
@@ -165,8 +178,9 @@ export async function POST(req: NextRequest) {
           service_slug: service.slug,
           nombre,
           patente,
+          dni,
           email,
-          cuit: cuit || "",
+          telefono,
         },
         payment_methods:
           method === "tarjeta"
@@ -242,5 +256,27 @@ export async function POST(req: NextRequest) {
       },
       { status: 502 }
     );
+  }
+}
+
+/**
+ * Envía el lead a una hoja de Google Sheets vía webhook de Apps Script.
+ * El usuario crea un Apps Script (doPost) que agrega una fila, lo despliega
+ * como Web App y pega la URL en GOOGLE_SHEETS_WEBHOOK_URL.
+ * Best-effort: nunca bloquea ni rompe el checkout si falla o no está configurado.
+ */
+async function pushToGoogleSheets(row: Record<string, unknown>): Promise<void> {
+  const url = cleanEnv(process.env.GOOGLE_SHEETS_WEBHOOK_URL);
+  if (!url) return;
+  try {
+    await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(row),
+      // Apps Script puede tardar; cortamos a 4s para no demorar el checkout.
+      signal: AbortSignal.timeout(4000),
+    });
+  } catch (e) {
+    console.warn("[checkout] Google Sheets webhook falló:", (e as Error).message);
   }
 }

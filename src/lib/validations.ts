@@ -34,14 +34,13 @@ export const leadSchema = z.object({
     .refine((v) => /^(\+?54)?\d{10}$|^\+\d{10,14}$/.test(v), {
       message: "Ej: 351 234 5678 (cód. área + número)",
     }),
-  cuit: z
+  dni: z
     .string()
-    .max(13, "CUIT/CUIL demasiado largo")
-    .optional()
-    .or(z.literal(""))
-    .transform((v) => (v ? v.replace(/[^0-9]/g, "") : ""))
-    .refine((v) => v === "" || /^\d{11}$/.test(v), {
-      message: "CUIT/CUIL debe tener 11 dígitos",
+    .min(7, "Ingresá tu DNI")
+    .max(10, "DNI demasiado largo")
+    .transform((v) => v.replace(/[^0-9]/g, ""))
+    .refine((v) => /^\d{7,8}$/.test(v), {
+      message: "El DNI debe tener 7 u 8 dígitos",
     }),
   terms: z.literal(true, {
     errorMap: () => ({ message: "Debés aceptar los términos" }),

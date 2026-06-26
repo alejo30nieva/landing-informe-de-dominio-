@@ -42,9 +42,11 @@ export async function POST(req: NextRequest) {
     const supa = getSupabaseAdmin();
     const { error } = await supa.from("leads").insert({
       order_id: orderId,
+      nombre: parsed.data.nombre,
       patente: parsed.data.patente,
+      dni: parsed.data.dni,
       email: parsed.data.email,
-      cuit: parsed.data.cuit || null,
+      telefono: parsed.data.telefono,
       amount: 0,
       status: "pending",
       source: "lead-form",

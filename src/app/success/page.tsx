@@ -10,7 +10,7 @@ import {
   Check,
 } from "lucide-react";
 import { useSearchParams } from "next/navigation";
-import { Suspense, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -25,12 +25,46 @@ import {
 function SuccessInner() {
   const params = useSearchParams();
   const sku = params.get("order") ?? "—";
-  // El servicio viene en ?svc=; si no, lo derivamos del prefijo del SKU.
-  const svcSlug = params.get("svc") ?? serviceSlugFromSku(sku);
-  const serviceTitle = serviceTitleFromSlug(svcSlug);
-  const nombre = params.get("nom") ?? undefined;
-  const patente = params.get("pat") ?? undefined;
-  const waLink = postPurchaseWhatsAppLink({ serviceTitle, sku, nombre, patente });
+
+  // Traemos el pedido completo desde Supabase (por SKU) para armar el
+  // mensaje de WhatsApp con TODOS los datos. Fallback al prefijo del SKU.
+  const [order, setOrder] = useState<null | {
+    service_title?: string;
+    service_slug?: string;
+    nombre?: string;
+    patente?: string;
+    dni?: string;
+    telefono?: string;
+    email?: string;
+  }>(null);
+
+  useEffect(() => {
+    if (!sku || sku === "—") return;
+    let cancelled = false;
+    fetch(`/api/order?id=${encodeURIComponent(sku)}`)
+      .then((r) => r.json())
+      .then((j) => {
+        if (!cancelled && j?.ok && j.order) setOrder(j.order);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [sku]);
+
+  const serviceTitle =
+    order?.service_title ??
+    serviceTitleFromSlug(order?.service_slug ?? serviceSlugFromSku(sku));
+
+  const waLink = postPurchaseWhatsAppLink({
+    serviceTitle,
+    sku,
+    nombre: order?.nombre,
+    patente: order?.patente,
+    dni: order?.dni,
+    telefono: order?.telefono,
+    email: order?.email,
+  });
 
   const [copied, setCopied] = useState(false);
   const copySku = async () => {

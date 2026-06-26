@@ -11,9 +11,9 @@ create table if not exists public.leads (
   service_title text,
   nombre text,
   patente text not null,
+  dni text,
   email text not null,
   telefono text,
-  cuit text,
   amount integer not null default 0,
   status text not null default 'pending'
     check (status in ('pending','approved','in_process','rejected','cancelled')),
