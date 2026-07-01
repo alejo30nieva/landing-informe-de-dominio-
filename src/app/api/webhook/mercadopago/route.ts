@@ -4,6 +4,7 @@ import { createHmac, timingSafeEqual } from "node:crypto";
 import { getPaymentClient } from "@/lib/mercadopago";
 import { getSupabaseAdmin } from "@/lib/supabase";
 import { notifyEmail, notifyWhatsApp } from "@/lib/notify";
+import { cleanEnv } from "@/lib/utils";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -79,20 +80,32 @@ export async function POST(req: NextRequest) {
     | "rejected"
     | "cancelled";
 
-  // 4) Idempotencia: si ya estaba en este mismo estado terminal, no re-notificamos.
+  // 4) Traemos el lead completo (para idempotencia + datos del mensaje).
   let previousStatus: string | null = null;
+  let lead: {
+    nombre?: string;
+    patente?: string;
+    dni?: string;
+    email?: string;
+    telefono?: string;
+    service_title?: string;
+    status?: string;
+  } | null = null;
   try {
     const supa = getSupabaseAdmin();
     if (orderId) {
       const { data } = await supa
         .from("leads")
-        .select("status")
+        .select(
+          "status, nombre, patente, dni, email, telefono, service_title"
+        )
         .eq("order_id", orderId)
         .maybeSingle();
+      lead = data ?? null;
       previousStatus = data?.status ?? null;
     }
   } catch (e) {
-    console.warn("[mp-webhook] no se pudo leer estado previo:", (e as Error).message);
+    console.warn("[mp-webhook] no se pudo leer el lead:", (e as Error).message);
   }
 
   // 5) Persistir update (best-effort).
@@ -113,24 +126,68 @@ export async function POST(req: NextRequest) {
     console.warn("[mp-webhook] supabase update fallido:", (e as Error).message);
   }
 
-  // 6) Notificar SOLO si el estado cambió a uno terminal nuevo.
+  // 6) Notificar SOLO si el estado cambió a uno terminal nuevo (idempotente).
   const isNewlyApproved =
     status === "approved" && previousStatus !== "approved";
 
   if (isNewlyApproved) {
-    const email = (payment.payer as any)?.email as string | undefined;
+    // Fusionamos datos: Supabase (lead) primero, metadata del pago como fallback.
+    const meta = (payment.metadata as any) ?? {};
+    const nombre = lead?.nombre ?? meta.nombre ?? "";
+    const patente = lead?.patente ?? meta.patente ?? "";
+    const dni = lead?.dni ?? meta.dni ?? "";
+    const email =
+      lead?.email ?? meta.email ?? (payment.payer as any)?.email ?? "";
+    const telefono = lead?.telefono ?? meta.telefono ?? "";
+    const servicio = lead?.service_title ?? meta.service_title ?? "Informe";
+    const monto = payment.transaction_amount ?? 0;
+
+    // Mensaje COMPLETO con todos los datos del formulario, para emitir el informe.
+    const fullMsg =
+      `✅ NUEVO PAGO APROBADO\n\n` +
+      `🧾 Servicio: ${servicio}\n` +
+      `👤 Nombre: ${nombre}\n` +
+      `🚗 Patente: ${patente}\n` +
+      `🪪 DNI: ${dni}\n` +
+      `📱 Teléfono: ${telefono}\n` +
+      `📧 Email: ${email}\n` +
+      `💰 Monto: $${Number(monto).toLocaleString("es-AR")}\n` +
+      `🔖 Código: ${orderId}`;
+
+    // 6a) WhatsApp AUTOMÁTICO a la gestoría (se envía sí o sí al aprobarse el pago).
+    const adminPhone = cleanEnv(process.env.ADMIN_WHATSAPP_PHONE);
+    if (adminPhone) {
+      const wa = await notifyWhatsApp({ to: adminPhone, body: fullMsg });
+      if (!wa.ok && !wa.skipped) {
+        console.warn("[mp-webhook] WhatsApp admin falló:", wa.error);
+      }
+    }
+
+    // 6b) Email AUTOMÁTICO a la gestoría (respaldo garantizado, con todos los datos).
+    const adminEmail = cleanEnv(process.env.ADMIN_EMAIL);
+    if (adminEmail) {
+      await notifyEmail({
+        to: adminEmail,
+        subject: `✅ Nuevo pago — ${servicio} — ${nombre} (${orderId})`,
+        html: adminEmailTemplate({
+          servicio,
+          nombre,
+          patente,
+          dni,
+          telefono,
+          email,
+          monto: Number(monto),
+          orderId: orderId || "—",
+        }),
+      });
+    }
+
+    // 6c) Email de confirmación al cliente.
     if (email) {
       await notifyEmail({
         to: email,
         subject: `Tu pago fue aprobado — Orden ${orderId}`,
-        html: emailTemplate(orderId, payment.transaction_amount ?? 0),
-      });
-    }
-    const adminPhone = process.env.ADMIN_WHATSAPP_PHONE;
-    if (adminPhone) {
-      await notifyWhatsApp({
-        to: adminPhone,
-        body: `✅ Pago aprobado\nOrden: ${orderId}\nMonto: $${payment.transaction_amount}\nEmail: ${email}`,
+        html: emailTemplate(orderId, monto),
       });
     }
   }
@@ -184,6 +241,42 @@ function verifyMpSignature(opts: {
   } catch {
     return false;
   }
+}
+
+/** Email interno para la gestoría con TODOS los datos del pedido pagado. */
+function adminEmailTemplate(d: {
+  servicio: string;
+  nombre: string;
+  patente: string;
+  dni: string;
+  telefono: string;
+  email: string;
+  monto: number;
+  orderId: string;
+}) {
+  const row = (k: string, v: string) =>
+    `<tr><td style="padding:6px 0;color:#6B7280;font-size:13px;width:110px">${k}</td><td style="padding:6px 0;font-weight:700;color:#0B1F3A;font-size:14px">${v || "—"}</td></tr>`;
+  return `<!doctype html>
+<html><body style="font-family:Inter,Arial,sans-serif;background:#F5F7FA;padding:24px;color:#0B1F3A">
+  <div style="max-width:520px;margin:0 auto;background:#fff;border-radius:16px;overflow:hidden;border:1px solid #E5E7EB">
+    <div style="background:#0B7A2F;color:#fff;padding:18px 24px">
+      <strong style="font-size:16px">✅ Nuevo pago aprobado</strong>
+    </div>
+    <div style="padding:24px">
+      <p style="color:#374151;font-size:14px;margin:0 0 12px">Datos del cliente para emitir el informe:</p>
+      <table style="width:100%;border-collapse:collapse">
+        ${row("Servicio", d.servicio)}
+        ${row("Nombre", d.nombre)}
+        ${row("Patente", d.patente)}
+        ${row("DNI", d.dni)}
+        ${row("Teléfono", d.telefono)}
+        ${row("Email", d.email)}
+        ${row("Monto", "$" + d.monto.toLocaleString("es-AR"))}
+        ${row("Código", d.orderId)}
+      </table>
+    </div>
+  </div>
+</body></html>`;
 }
 
 function emailTemplate(orderId: string, amount: number) {
