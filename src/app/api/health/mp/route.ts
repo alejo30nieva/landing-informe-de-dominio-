@@ -34,6 +34,17 @@ export async function GET(req: NextRequest) {
       cleanEnv(process.env.SUPABASE_URL) &&
         cleanEnv(process.env.SUPABASE_SERVICE_ROLE_KEY)
     ),
+    // Notificación automática al aprobarse el pago
+    notificaciones: {
+      resendSet: Boolean(cleanEnv(process.env.RESEND_API_KEY)),
+      adminEmailSet: Boolean(cleanEnv(process.env.ADMIN_EMAIL)),
+      adminEmail: cleanEnv(process.env.ADMIN_EMAIL) || null,
+      whatsappCloudSet: Boolean(
+        cleanEnv(process.env.WHATSAPP_TOKEN) &&
+          cleanEnv(process.env.WHATSAPP_PHONE_ID)
+      ),
+      googleSheetsSet: Boolean(cleanEnv(process.env.GOOGLE_SHEETS_WEBHOOK_URL)),
+    },
     bank: {
       titularSet: Boolean(cleanEnv(process.env.BANK_TITULAR)),
       aliasSet: Boolean(cleanEnv(process.env.BANK_ALIAS)),
