@@ -92,7 +92,17 @@ export async function POST(req: NextRequest) {
       user_agent: req.headers.get("user-agent") ?? null,
       ip,
     });
-    if (!error) supaSaved = true;
+    if (!error) {
+      supaSaved = true;
+    } else {
+      // Log explícito del error de insert para diagnosticar (columnas faltantes, etc.)
+      console.error("[checkout] supabase insert error:", {
+        message: error.message,
+        details: (error as any).details,
+        hint: (error as any).hint,
+        code: (error as any).code,
+      });
+    }
   } catch (e) {
     console.warn("[checkout] supabase no configurado o error:", (e as Error).message);
   }
