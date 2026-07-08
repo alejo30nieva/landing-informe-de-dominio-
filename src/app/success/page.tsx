@@ -134,7 +134,7 @@ function SuccessInner() {
           <Button asChild size="lg" className="w-full h-12 bg-[#25D366] hover:bg-[#1ebe5b]">
             <a href={waLink} target="_blank" rel="noopener noreferrer">
               <MessageCircle className="h-5 w-5" />
-              Consultar por WhatsApp
+              Enviar comprobante por WhatsApp
             </a>
           </Button>
           <Button asChild size="lg" variant="outline" className="w-full">

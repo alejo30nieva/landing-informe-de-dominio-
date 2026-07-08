@@ -76,7 +76,7 @@ export type PurchaseData = {
 export function postPurchaseMessage(opts: PurchaseData): string {
   const { serviceTitle, sku, nombre, patente, dni, telefono, email } = opts;
   const lines = [
-    `¡Hola! Acabo de pagar mi informe. Estos son mis datos:`,
+    `¡Hola! Acabo de pagar y les envío el comprobante con mis datos:`,
     ``,
     `🧾 Servicio: ${serviceTitle}`,
     nombre ? `👤 Nombre: ${nombre}` : null,
@@ -86,7 +86,7 @@ export function postPurchaseMessage(opts: PurchaseData): string {
     email ? `📧 Email: ${email}` : null,
     `🔖 Código de compra: ${sku}`,
     ``,
-    `Quedo atento al informe. ¡Gracias!`,
+    `Adjunto el comprobante de pago. Quedo atento al informe. ¡Gracias!`,
   ].filter(Boolean);
   return lines.join("\n");
 }
