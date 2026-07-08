@@ -37,3 +37,6 @@ next-env.d.ts
 # IDEs
 .vscode/
 .idea/
+
+# Archivo local de env para cargar en Vercel (NO commitear)
+VERCEL.env.txt
