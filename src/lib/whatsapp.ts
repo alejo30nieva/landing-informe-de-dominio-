@@ -29,6 +29,7 @@ const SKU_PREFIX: Record<string, string> = {
   "informe-compra-segura": "COMBO",
   "informe-nominal": "NOM",
   "valuacion-fiscal": "VAL",
+  "informe-prueba": "TEST",
 };
 
 export function skuPrefix(serviceSlug: string): string {

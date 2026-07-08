@@ -15,7 +15,7 @@ import { SERVICES } from "@/lib/services";
 
 export default function HomePage() {
   const informeServices = SERVICES.filter(
-    (s) => s.category === "informes" && s.priceARS
+    (s) => s.category === "informes" && s.priceARS && s.slug !== "informe-prueba"
   ).map((s) =>
     serviceSchema({
       name: s.title,
