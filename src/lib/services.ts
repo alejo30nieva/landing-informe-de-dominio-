@@ -119,13 +119,13 @@ export const SERVICES: Service[] = [
     // Solo aparece en el formulario; excluido de páginas públicas y SEO.
     // ELIMINAR cuando termine el testeo.
     slug: "informe-prueba",
-    title: "Producto de prueba ($500)",
+    title: "Producto de prueba ($200)",
     shortLabel: "Prueba",
     shortDesc:
-      "Producto de testeo de $500 para verificar el flujo de pago completo.",
+      "Producto de testeo de $200 para verificar el flujo de pago completo.",
     longDesc:
-      "Producto temporal de prueba. Permite hacer un pago real de $500 ARS para confirmar que MercadoPago, Supabase, Google Sheets y las notificaciones funcionan. Eliminar antes de producción.",
-    priceARS: 500,
+      "Producto temporal de prueba. Permite hacer un pago real de $200 ARS para confirmar que MercadoPago, Supabase y las notificaciones funcionan. Eliminar antes de producción.",
+    priceARS: 200,
     delivery: "Inmediato (prueba)",
     icon: "Zap",
     category: "informes",
