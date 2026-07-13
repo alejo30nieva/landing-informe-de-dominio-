@@ -37,6 +37,8 @@ export async function GET(req: NextRequest) {
     // Notificación automática al aprobarse el pago
     notificaciones: {
       resendSet: Boolean(cleanEnv(process.env.RESEND_API_KEY)),
+      resendFrom: cleanEnv(process.env.RESEND_FROM) || "(default onboarding@resend.dev)",
+      resendOwnerEmail: cleanEnv(process.env.RESEND_OWNER_EMAIL) || null,
       adminEmailSet: Boolean(cleanEnv(process.env.ADMIN_EMAIL)),
       adminEmail: cleanEnv(process.env.ADMIN_EMAIL) || null,
       whatsappCloudSet: Boolean(

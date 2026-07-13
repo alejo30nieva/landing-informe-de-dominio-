@@ -44,7 +44,10 @@ export async function notifyEmail(opts: {
   html: string;
 }): Promise<{ ok: boolean; skipped?: boolean; error?: string }> {
   const apiKey = process.env.RESEND_API_KEY;
-  const from = process.env.RESEND_FROM ?? "Gestoría Córdoba <no-reply@gestoriacordoba.com>";
+  // Default SEGURO: onboarding@resend.dev es el único remitente que Resend
+  // permite sin verificar dominio. Nunca cae a un dominio inexistente.
+  const from =
+    process.env.RESEND_FROM ?? "Gestoría Córdoba <onboarding@resend.dev>";
   if (!apiKey) return { ok: true, skipped: true };
 
   try {
@@ -61,7 +64,15 @@ export async function notifyEmail(opts: {
         html: opts.html,
       }),
     });
-    if (!res.ok) return { ok: false, error: `RESEND ${res.status}` };
+    if (!res.ok) {
+      // Incluimos el cuerpo de la respuesta de Resend para ver el motivo real
+      // (ej: 403 "You can only send testing emails to your own email address").
+      let detail = "";
+      try {
+        detail = await res.text();
+      } catch {}
+      return { ok: false, error: `RESEND ${res.status} ${detail.slice(0, 400)}` };
+    }
     return { ok: true };
   } catch (e: any) {
     return { ok: false, error: e?.message ?? "email_error" };

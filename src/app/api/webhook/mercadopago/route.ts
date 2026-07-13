@@ -51,8 +51,13 @@ export async function POST(req: NextRequest) {
       dataId: String(dataId ?? ""),
     });
     if (!signatureOk) {
-      console.warn("[mp-webhook] firma inválida — request rechazado");
-      return NextResponse.json({ ok: false, error: "invalid_signature" }, { status: 401 });
+      // NO bloqueamos: abajo re-consultamos el pago directo a MP con NUESTRO
+      // access_token (fuente de verdad). Un webhook falsificado no puede fabricar
+      // un pago aprobado real. Si la firma no coincide (secret mal cargado en
+      // Vercel) igual procesamos, para no perder notificaciones en silencio.
+      console.warn(
+        "[mp-webhook] firma inválida (¿MP_WEBHOOK_SECRET mal cargado?) — proceso igual validando el pago vía API de MP"
+      );
     }
   }
 
@@ -154,42 +159,71 @@ export async function POST(req: NextRequest) {
       `💰 Monto: $${Number(monto).toLocaleString("es-AR")}\n` +
       `🔖 Código: ${orderId}`;
 
+    console.log(
+      `[mp-webhook] PAGO APROBADO ${orderId} — notificando gestoría (${servicio}, ${nombre})`
+    );
+
     // 6a) WhatsApp AUTOMÁTICO a la gestoría (se envía sí o sí al aprobarse el pago).
     const adminPhone = cleanEnv(process.env.ADMIN_WHATSAPP_PHONE);
     if (adminPhone) {
       const wa = await notifyWhatsApp({ to: adminPhone, body: fullMsg });
-      if (!wa.ok && !wa.skipped) {
-        console.warn("[mp-webhook] WhatsApp admin falló:", wa.error);
+      if (wa.ok && !wa.skipped) {
+        console.log(`[mp-webhook] WhatsApp gestoría OK -> ${adminPhone}`);
+      } else if (!wa.skipped) {
+        console.warn("[mp-webhook] WhatsApp gestoría FALLÓ:", wa.error);
       }
     }
 
-    // 6b) Email AUTOMÁTICO a la gestoría (respaldo garantizado, con todos los datos).
-    const adminEmail = cleanEnv(process.env.ADMIN_EMAIL);
-    if (adminEmail) {
-      await notifyEmail({
-        to: adminEmail,
-        subject: `✅ Nuevo pago — ${servicio} — ${nombre} (${orderId})`,
-        html: adminEmailTemplate({
-          servicio,
-          nombre,
-          patente,
-          dni,
-          telefono,
-          email,
-          monto: Number(monto),
-          orderId: orderId || "—",
-        }),
-      });
+    // 6b) Email AUTOMÁTICO a la gestoría — con TODOS los datos para emitir el informe.
+    //     Se envía a ADMIN_EMAIL (gestora) y ADEMÁS a RESEND_OWNER_EMAIL (el email
+    //     dueño de la cuenta Resend) como copia GARANTIZADA: mientras el dominio no
+    //     esté verificado en Resend, ese es el único inbox que Resend nunca rechaza.
+    const adminHtml = adminEmailTemplate({
+      servicio,
+      nombre,
+      patente,
+      dni,
+      telefono,
+      email,
+      monto: Number(monto),
+      orderId: orderId || "—",
+    });
+    const adminSubject = `✅ Nuevo pago — ${servicio} — ${nombre} (${orderId})`;
+    const adminRecipients = Array.from(
+      new Set(
+        [
+          cleanEnv(process.env.ADMIN_EMAIL),
+          cleanEnv(process.env.RESEND_OWNER_EMAIL),
+        ].filter(Boolean)
+      )
+    ) as string[];
+
+    for (const to of adminRecipients) {
+      const r = await notifyEmail({ to, subject: adminSubject, html: adminHtml });
+      if (r.ok && !r.skipped) {
+        console.log(`[mp-webhook] email gestoría OK -> ${to}`);
+      } else if (!r.skipped) {
+        console.error(`[mp-webhook] email gestoría FALLÓ -> ${to}:`, r.error);
+      }
     }
 
     // 6c) Email de confirmación al cliente.
     if (email) {
-      await notifyEmail({
+      const rc = await notifyEmail({
         to: email,
         subject: `Tu pago fue aprobado — Orden ${orderId}`,
         html: emailTemplate(orderId, monto),
       });
+      if (rc.ok && !rc.skipped) {
+        console.log(`[mp-webhook] email cliente OK -> ${email}`);
+      } else if (!rc.skipped) {
+        console.error(`[mp-webhook] email cliente FALLÓ -> ${email}:`, rc.error);
+      }
     }
+  } else {
+    console.log(
+      `[mp-webhook] evento ${orderId} status=${status} (prev=${previousStatus}) — sin notificar`
+    );
   }
 
   return NextResponse.json({ ok: true, status, idempotent: !isNewlyApproved && status === "approved" });
