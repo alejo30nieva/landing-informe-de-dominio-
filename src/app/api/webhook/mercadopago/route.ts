@@ -190,12 +190,13 @@ export async function POST(req: NextRequest) {
     });
     const adminSubject = `✅ Nuevo pago — ${servicio} — ${nombre} (${orderId})`;
 
-    // Destinatario principal: la gestora. Enviado DESDE el dominio verificado
-    // (pagos@informesdedominio.online) para que Resend lo entregue a cualquier
-    // casilla. Forzamos el `from` acá para no depender de RESEND_FROM en Vercel.
-    const gestoraEmail =
-      cleanEnv(process.env.ADMIN_EMAIL) || "gestoriacordobaluci@gmail.com";
+    // Destinatario: la gestora (Lucía). Hardcodeado a propósito — la variable
+    // ADMIN_EMAIL en Vercel está seteada a otro mail (contacto.wconnect) y no la
+    // podemos cambiar desde acá, así que la ignoramos para garantizar el destino.
+    // Enviado DESDE el dominio verificado (pagos@informesdedominio.online), que ya
+    // entrega a cualquier casilla. Forzamos el `from` para no depender de RESEND_FROM.
     const verifiedFrom = "Gestoría Córdoba <pagos@informesdedominio.online>";
+    const gestoraEmail = "gestoriacordobaluci@gmail.com";
 
     const rG = await notifyEmail({
       to: gestoraEmail,
@@ -209,27 +210,11 @@ export async function POST(req: NextRequest) {
       console.error(`[mp-webhook] email gestoría FALLÓ -> ${gestoraEmail}:`, rG.error);
     }
 
-    // Copia de respaldo GARANTIZADA al dueño de la cuenta Resend (siempre entrega,
-    // aún sin dominio verificado). Red de seguridad hasta confirmar que el envío
-    // desde el dominio verificado llega. TODO: quitar cuando esté 100% confirmado.
-    const OWNER_BACKUP = "alejonieva090@gmail.com";
-    if (OWNER_BACKUP.toLowerCase() !== gestoraEmail.toLowerCase()) {
-      const rB = await notifyEmail({
-        to: OWNER_BACKUP,
-        subject: `(respaldo) ${adminSubject}`,
-        html: adminHtml,
-      });
-      if (rB.ok && !rB.skipped) {
-        console.log(`[mp-webhook] email respaldo OK -> ${OWNER_BACKUP}`);
-      } else if (!rB.skipped) {
-        console.error(`[mp-webhook] email respaldo FALLÓ -> ${OWNER_BACKUP}:`, rB.error);
-      }
-    }
-
-    // 6c) Email de confirmación al cliente.
+    // 6c) Email de confirmación al cliente — también desde el dominio verificado.
     if (email) {
       const rc = await notifyEmail({
         to: email,
+        from: verifiedFrom,
         subject: `Tu pago fue aprobado — Orden ${orderId}`,
         html: emailTemplate(orderId, monto),
       });
