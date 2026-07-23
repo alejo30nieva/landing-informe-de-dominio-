@@ -189,11 +189,16 @@ export async function POST(req: NextRequest) {
       orderId: orderId || "—",
     });
     const adminSubject = `✅ Nuevo pago — ${servicio} — ${nombre} (${orderId})`;
+    // Inbox GARANTIZADO: dueño de la cuenta Resend. Mientras el dominio no esté
+    // verificado, es el ÚNICO destinatario que Resend nunca rechaza. Hardcodeado
+    // como fallback para que funcione sin depender de ninguna variable en Vercel.
+    // TODO: quitar este default cuando informesdedominio.online esté verificado.
+    const RESEND_OWNER_FALLBACK = "alejonieva090@gmail.com";
     const adminRecipients = Array.from(
       new Set(
         [
           cleanEnv(process.env.ADMIN_EMAIL),
-          cleanEnv(process.env.RESEND_OWNER_EMAIL),
+          cleanEnv(process.env.RESEND_OWNER_EMAIL) || RESEND_OWNER_FALLBACK,
         ].filter(Boolean)
       )
     ) as string[];
