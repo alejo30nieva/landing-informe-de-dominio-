@@ -42,12 +42,17 @@ export async function notifyEmail(opts: {
   to: string;
   subject: string;
   html: string;
+  /** Remitente explícito. Si se pasa, ignora RESEND_FROM (útil para forzar el
+   *  dominio verificado en un envío puntual sin depender de la env de Vercel). */
+  from?: string;
 }): Promise<{ ok: boolean; skipped?: boolean; error?: string }> {
   const apiKey = process.env.RESEND_API_KEY;
   // Default SEGURO: onboarding@resend.dev es el único remitente que Resend
   // permite sin verificar dominio. Nunca cae a un dominio inexistente.
   const from =
-    process.env.RESEND_FROM ?? "Gestoría Córdoba <onboarding@resend.dev>";
+    opts.from ??
+    process.env.RESEND_FROM ??
+    "Gestoría Córdoba <onboarding@resend.dev>";
   if (!apiKey) return { ok: true, skipped: true };
 
   try {

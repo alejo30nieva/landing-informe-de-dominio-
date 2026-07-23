@@ -189,26 +189,40 @@ export async function POST(req: NextRequest) {
       orderId: orderId || "—",
     });
     const adminSubject = `✅ Nuevo pago — ${servicio} — ${nombre} (${orderId})`;
-    // Inbox GARANTIZADO: dueño de la cuenta Resend. Mientras el dominio no esté
-    // verificado, es el ÚNICO destinatario que Resend nunca rechaza. Hardcodeado
-    // como fallback para que funcione sin depender de ninguna variable en Vercel.
-    // TODO: quitar este default cuando informesdedominio.online esté verificado.
-    const RESEND_OWNER_FALLBACK = "alejonieva090@gmail.com";
-    const adminRecipients = Array.from(
-      new Set(
-        [
-          cleanEnv(process.env.ADMIN_EMAIL),
-          cleanEnv(process.env.RESEND_OWNER_EMAIL) || RESEND_OWNER_FALLBACK,
-        ].filter(Boolean)
-      )
-    ) as string[];
 
-    for (const to of adminRecipients) {
-      const r = await notifyEmail({ to, subject: adminSubject, html: adminHtml });
-      if (r.ok && !r.skipped) {
-        console.log(`[mp-webhook] email gestoría OK -> ${to}`);
-      } else if (!r.skipped) {
-        console.error(`[mp-webhook] email gestoría FALLÓ -> ${to}:`, r.error);
+    // Destinatario principal: la gestora. Enviado DESDE el dominio verificado
+    // (pagos@informesdedominio.online) para que Resend lo entregue a cualquier
+    // casilla. Forzamos el `from` acá para no depender de RESEND_FROM en Vercel.
+    const gestoraEmail =
+      cleanEnv(process.env.ADMIN_EMAIL) || "gestoriacordobaluci@gmail.com";
+    const verifiedFrom = "Gestoría Córdoba <pagos@informesdedominio.online>";
+
+    const rG = await notifyEmail({
+      to: gestoraEmail,
+      from: verifiedFrom,
+      subject: adminSubject,
+      html: adminHtml,
+    });
+    if (rG.ok && !rG.skipped) {
+      console.log(`[mp-webhook] email gestoría OK -> ${gestoraEmail}`);
+    } else if (!rG.skipped) {
+      console.error(`[mp-webhook] email gestoría FALLÓ -> ${gestoraEmail}:`, rG.error);
+    }
+
+    // Copia de respaldo GARANTIZADA al dueño de la cuenta Resend (siempre entrega,
+    // aún sin dominio verificado). Red de seguridad hasta confirmar que el envío
+    // desde el dominio verificado llega. TODO: quitar cuando esté 100% confirmado.
+    const OWNER_BACKUP = "alejonieva090@gmail.com";
+    if (OWNER_BACKUP.toLowerCase() !== gestoraEmail.toLowerCase()) {
+      const rB = await notifyEmail({
+        to: OWNER_BACKUP,
+        subject: `(respaldo) ${adminSubject}`,
+        html: adminHtml,
+      });
+      if (rB.ok && !rB.skipped) {
+        console.log(`[mp-webhook] email respaldo OK -> ${OWNER_BACKUP}`);
+      } else if (!rB.skipped) {
+        console.error(`[mp-webhook] email respaldo FALLÓ -> ${OWNER_BACKUP}:`, rB.error);
       }
     }
 
