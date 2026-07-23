@@ -5,6 +5,7 @@ import { getPaymentClient } from "@/lib/mercadopago";
 import { getSupabaseAdmin } from "@/lib/supabase";
 import { notifyEmail, notifyWhatsApp } from "@/lib/notify";
 import { cleanEnv } from "@/lib/utils";
+import { serviceSlugFromSku, serviceTitleFromSlug } from "@/lib/whatsapp";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -144,7 +145,15 @@ export async function POST(req: NextRequest) {
     const email =
       lead?.email ?? meta.email ?? (payment.payer as any)?.email ?? "";
     const telefono = lead?.telefono ?? meta.telefono ?? "";
-    const servicio = lead?.service_title ?? meta.service_title ?? "Informe";
+    // Servicio elegido: prioriza Supabase, luego metadata del pago y, como red de
+    // seguridad final, lo DERIVA del código de compra (GC-DOM, GC-MUL, GC-COMBO…)
+    // que siempre viene en external_reference. Así nunca queda el genérico "Informe".
+    const slugFromSku = serviceSlugFromSku(orderId);
+    const servicio =
+      lead?.service_title ||
+      meta.service_title ||
+      (slugFromSku ? serviceTitleFromSlug(slugFromSku) : "") ||
+      "Informe";
     const monto = payment.transaction_amount ?? 0;
 
     // Mensaje COMPLETO con todos los datos del formulario, para emitir el informe.

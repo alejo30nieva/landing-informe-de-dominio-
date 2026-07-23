@@ -114,24 +114,6 @@ export const SERVICES: Service[] = [
     featured: true,
     selectableInForm: true,
   },
-  {
-    // ⚠️ TEMPORAL — producto de prueba de $500 para testear el flujo de pago.
-    // Solo aparece en el formulario; excluido de páginas públicas y SEO.
-    // ELIMINAR cuando termine el testeo.
-    slug: "informe-prueba",
-    title: "Producto de prueba ($200)",
-    shortLabel: "Prueba",
-    shortDesc:
-      "Producto de testeo de $200 para verificar el flujo de pago completo.",
-    longDesc:
-      "Producto temporal de prueba. Permite hacer un pago real de $200 ARS para confirmar que MercadoPago, Supabase y las notificaciones funcionan. Eliminar antes de producción.",
-    priceARS: 200,
-    delivery: "Inmediato (prueba)",
-    icon: "Zap",
-    category: "informes",
-    selectableInForm: true,
-  },
-
   // Transferencias
   {
     slug: "transferencia",

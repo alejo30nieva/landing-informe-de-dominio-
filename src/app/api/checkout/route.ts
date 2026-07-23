@@ -186,6 +186,7 @@ export async function POST(req: NextRequest) {
         metadata: {
           order_id: orderId,
           service_slug: service.slug,
+          service_title: service.title,
           nombre,
           patente,
           dni,
