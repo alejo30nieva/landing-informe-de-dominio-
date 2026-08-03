@@ -562,7 +562,7 @@ function StepPatente({
           }}
           inputMode="text"
           autoComplete="off"
-          placeholder="AB123CD o ABC123"
+          placeholder="Auto o moto — ej: AB123CD, ABC123, A123BCD"
           aria-invalid={!!error}
           invalid={!!error}
           value={value}

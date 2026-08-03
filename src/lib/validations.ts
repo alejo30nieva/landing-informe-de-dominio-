@@ -1,7 +1,5 @@
 import { z } from "zod";
 
-const patenteRegex = /^([A-Z]{3}\d{3}|[A-Z]{2}\d{3}[A-Z]{2})$/;
-
 export const leadSchema = z.object({
   serviceSlug: z
     .string()
@@ -14,11 +12,11 @@ export const leadSchema = z.object({
     .transform((v) => v.trim()),
   patente: z
     .string()
-    .min(6, "La patente debe tener al menos 6 caracteres")
-    .max(7, "La patente no puede tener más de 7 caracteres")
-    .transform((v) => v.toUpperCase().replace(/\s/g, ""))
-    .refine((v) => patenteRegex.test(v), {
-      message: "Formato inválido. Ej: ABC123 o AB123CD",
+    .transform((v) => v.toUpperCase().replace(/[^A-Z0-9]/g, ""))
+    // Sin formato rígido: acepta autos y motos en cualquier orden
+    // (ABC123, AB123CD, 123ABC, A123BCD, etc.). Solo letras y números, 5–8.
+    .refine((v) => /^[A-Z0-9]{5,8}$/.test(v), {
+      message: "Ingresá una patente válida (letras y números)",
     }),
   email: z
     .string()
