@@ -55,7 +55,7 @@ export const GUIAS: Guia[] = [
       { type: "h2", text: "2. Revisá deudas de patente y multas" },
       {
         type: "p",
-        text: "Las deudas de patente y las multas viajan con el auto, no con el dueño anterior. Si comprás un vehículo con deudas, las heredás vos. Un Informe de Multas a nivel nacional te muestra todo lo adeudado en municipios y provincias.",
+        text: "Las deudas de patente y las multas viajan con el auto, no con el dueño anterior. Si comprás un vehículo con deudas, las heredás vos. Una consulta de Multas a nivel nacional te muestra todo lo adeudado en municipios y provincias.",
       },
       { type: "h2", text: "3. Confirmá que no tenga embargos ni inhibiciones" },
       {
@@ -82,7 +82,7 @@ export const GUIAS: Guia[] = [
       { type: "h2", text: "¿Cómo obtengo toda esta información?" },
       {
         type: "p",
-        text: "Con la patente del vehículo. Solicitás un Informe de Dominio Automotor online, lo recibís por email y WhatsApp en 10–15 minutos, y revisás todos estos puntos de una sola vez.",
+        text: "Con la patente del vehículo. Solicitás un Informe de Dominio Automotor online, lo recibís por email y WhatsApp en 24 a 72 hs, y revisás todos estos puntos de una sola vez.",
       },
       {
         type: "cta",
@@ -145,7 +145,7 @@ export const GUIAS: Guia[] = [
       { type: "h2", text: "¿Cuánto tarda y cómo se obtiene?" },
       {
         type: "p",
-        text: "Con la patente del vehículo lo solicitás online. Lo recibís en PDF por email y WhatsApp, generalmente en 10 a 15 minutos. No necesitás ir al registro ni sacar turno.",
+        text: "Con la patente del vehículo lo solicitás online. Lo recibís en PDF por email y WhatsApp, generalmente en 24 a 72 hs. No necesitás ir al registro ni sacar turno.",
       },
       {
         type: "cta",
@@ -158,7 +158,7 @@ export const GUIAS: Guia[] = [
     title: "Informe de Dominio en Córdoba: cómo solicitarlo online",
     metaTitle: "Informe de Dominio Automotor en Córdoba — Online y rápido",
     description:
-      "Cómo solicitar un Informe de Dominio Automotor en Córdoba 100% online. Mandataria matriculada, entrega en minutos por email y WhatsApp. Para toda Argentina.",
+      "Cómo solicitar un Informe de Dominio Automotor en Córdoba 100% online. Mandataria matriculada, entrega en 24 a 72 hs por email y WhatsApp. Para toda Argentina.",
     keywords: [
       "informe de dominio cordoba",
       "informe automotor cordoba",
@@ -188,7 +188,7 @@ export const GUIAS: Guia[] = [
           "Completá tu email y WhatsApp",
           "Elegí el tipo de informe que necesitás",
           "Pagá con MercadoPago, tarjeta, transferencia o QR",
-          "Recibí el informe en PDF en 10–15 minutos",
+          "Recibí el informe en PDF en 24 a 72 hs",
         ],
       },
       { type: "h2", text: "¿Sirve sólo para autos de Córdoba?" },

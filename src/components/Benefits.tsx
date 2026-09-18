@@ -6,7 +6,7 @@ const benefits = [
   {
     icon: Zap,
     title: "Rápido",
-    desc: "Recibí el informe en minutos directamente en tu casilla de email.",
+    desc: "Recibí el informe en 24 a 72 hs directamente en tu casilla de email.",
   },
   {
     icon: ShieldCheck,

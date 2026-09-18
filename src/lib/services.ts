@@ -70,7 +70,7 @@ export const SERVICES: Service[] = [
   },
   {
     slug: "informe-multas",
-    title: "Informe de Multas",
+    title: "Multas",
     shortLabel: "Multas",
     shortDesc:
       "Consulta de multas a nivel nacional en municipalidades, provincias y CABA.",
@@ -86,12 +86,12 @@ export const SERVICES: Service[] = [
   },
   {
     slug: "informe-multas-express",
-    title: "Informe de Multas EXPRESS",
+    title: "Multas EXPRESS",
     shortLabel: "Multas Express",
     shortDesc:
       "Consulta de multas con prioridad. Se entrega en menos de 8 horas hábiles.",
     longDesc:
-      "Igual que el Informe de Multas pero con prioridad en la cola. Puede estar listo mucho antes según disponibilidad del sistema.",
+      "Igual que la consulta de Multas pero con prioridad en la cola. Puede estar listo mucho antes según disponibilidad del sistema.",
     priceARS: 22600,
     delivery: "Hasta 8 hs hábiles",
     icon: "Zap",
@@ -104,9 +104,9 @@ export const SERVICES: Service[] = [
     title: "Combo Histórico + Multas",
     shortLabel: "Combo",
     shortDesc:
-      "Histórico de titulares + Informe de Multas a nivel nacional. El combo ideal antes de comprar.",
+      "Histórico de titulares + Multas a nivel nacional. El combo ideal antes de comprar.",
     longDesc:
-      "Paquete combinado con descuento: incluye el Informe Histórico de Titulares y el Informe de Multas a nivel nacional. Ahorrás vs. comprarlos por separado ($13.900 + $17.200 = $31.100).",
+      "Paquete combinado con descuento: incluye el Informe Histórico de Titulares y las Multas a nivel nacional. Ahorrás vs. comprarlos por separado ($13.900 + $17.200 = $31.100).",
     priceARS: 25500,
     delivery: "30–60 minutos",
     icon: "ShoppingCart",

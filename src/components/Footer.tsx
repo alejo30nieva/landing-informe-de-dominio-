@@ -7,10 +7,9 @@ import {
   FileCheck2,
   ShieldCheck,
   Phone,
-  ExternalLink,
   Instagram,
 } from "lucide-react";
-import { COMPANY, SOURCES } from "@/lib/company";
+import { COMPANY } from "@/lib/company";
 
 export function Footer() {
   return (
@@ -208,20 +207,9 @@ export function Footer() {
             entidades estatales o gubernamentales de la República Argentina.
           </p>
           <p>
-            <strong className="text-white/80">Fuentes:</strong>{" "}
-            {SOURCES.map((s, i) => (
-              <span key={s.href}>
-                <a
-                  href={s.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-brand-500 underline-offset-2 hover:underline inline-flex items-center gap-1"
-                >
-                  {s.label} <ExternalLink className="h-3 w-3" />
-                </a>
-                {i < SOURCES.length - 1 ? " · " : ""}
-              </span>
-            ))}
+            Los informes se emiten con información oficial del Registro Nacional
+            de la Propiedad del Automotor (DNRPA) y organismos oficiales, y
+            tienen plena validez legal.
           </p>
         </div>
 

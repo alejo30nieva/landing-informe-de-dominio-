@@ -2,7 +2,7 @@
 export const FAQS = [
   {
     q: "¿Cuánto demora el informe de dominio?",
-    a: "En la mayoría de los casos el informe se entrega entre 5 y 15 minutos después de confirmado el pago. En horarios pico o fines de semana puede demorar hasta 1 hora hábil.",
+    a: "El informe se entrega entre 24 y 72 hs después de confirmado el pago. Te avisamos por email y WhatsApp apenas esté listo.",
   },
   {
     q: "¿Cómo recibo el informe?",
@@ -18,7 +18,7 @@ export const FAQS = [
   },
   {
     q: "¿Qué pasa después del pago?",
-    a: "Recibís un email y mensaje de WhatsApp confirmando que tu pedido fue tomado. Nuestro equipo procesa el informe y te lo envía por los dos canales apenas esté listo, entre 10 y 15 minutos.",
+    a: "Recibís un email y mensaje de WhatsApp confirmando que tu pedido fue tomado. Nuestro equipo procesa el informe y te lo envía por los dos canales apenas esté listo, entre 24 y 72 hs.",
   },
   {
     q: "¿Puedo consultar cualquier vehículo en Argentina?",
@@ -26,7 +26,7 @@ export const FAQS = [
   },
   {
     q: "¿Cuánto cuesta un informe de dominio en Córdoba?",
-    a: "El Informe de Dominio Automotor cuesta desde $9.900. También ofrecemos Informe Histórico de Titulares ($13.900), Informe Nominal ($10.500) e Informe de Multas a nivel nacional ($17.200).",
+    a: "El Informe de Dominio Automotor cuesta desde $9.900. También ofrecemos Informe Histórico de Titulares ($13.900), Informe Nominal ($10.500) y Multas a nivel nacional ($17.200).",
   },
   {
     q: "¿Sirve para comprar un auto usado de forma segura?",

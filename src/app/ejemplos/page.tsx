@@ -90,7 +90,7 @@ export default function EjemplosPage() {
                 <CheckCircle2 className="h-4 w-4 text-success" /> Toda Argentina
               </span>
               <span className="inline-flex items-center gap-1.5 text-ink-700">
-                <Clock className="h-4 w-4 text-brand-700" /> Entrega rápida
+                <Clock className="h-4 w-4 text-brand-700" /> Entrega en 24 a 72 hs
               </span>
             </div>
 
@@ -140,8 +140,8 @@ export default function EjemplosPage() {
               ¿Listo para tu informe?
             </h2>
             <p className="mt-3 text-white/80">
-              Solicitalo en 1 minuto. Pago seguro y entrega en minutos por email
-              y WhatsApp.
+              Solicitalo en 1 minuto. Pago seguro y entrega en 24 a 72 hs por
+              email y WhatsApp.
             </p>
             <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
               <Button asChild size="xl">

@@ -55,7 +55,7 @@ export default function OgImage() {
         </div>
         <div style={{ fontSize: 32, opacity: 0.85, marginTop: 28, maxWidth: 900 }}>
           Verificá cualquier vehículo antes de comprar · 100% online · Entrega en
-          minutos
+          24 a 72 hs
         </div>
         <div
           style={{

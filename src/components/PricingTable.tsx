@@ -76,7 +76,7 @@ const INCLUDES: Record<string, string[]> = {
   ],
   "informe-compra-segura": [
     "Histórico de titulares completo",
-    "Informe de Multas nacional",
+    "Multas a nivel nacional",
     "Descuento por combo",
     "Recomendado para compra",
   ],

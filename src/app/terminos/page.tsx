@@ -60,10 +60,9 @@ export default function TerminosPage() {
 
       <h2>5. Plazos de entrega</h2>
       <p>
-        El plazo estimado de entrega del Informe es de 10 a 15 minutos desde la
-        confirmación del pago, en horario hábil. En horarios no laborables,
-        fines de semana o feriados, el plazo puede extenderse hasta el
-        siguiente día hábil.
+        El plazo estimado de entrega del Informe es de 24 a 72 hs desde la
+        confirmación del pago. En horarios no laborables, fines de semana o
+        feriados, el plazo puede extenderse hasta el siguiente día hábil.
       </p>
 
       <h2>6. Cancelación y reembolso</h2>

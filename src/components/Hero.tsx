@@ -5,7 +5,7 @@ import { HeroForm } from "@/components/HeroForm";
 
 const bullets = [
   { icon: FileCheck2, text: "Información oficial y actualizada" },
-  { icon: Clock, text: "Entrega rápida" },
+  { icon: Clock, text: "Entrega en 24 a 72 hs" },
   { icon: Globe2, text: "100% online" },
   { icon: ShieldCheck, text: "Seguro y confidencial" },
 ];

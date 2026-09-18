@@ -51,7 +51,7 @@ export function localBusinessSchema() {
       "Informe de Dominio Automotor",
       "Informe Histórico de Titulares",
       "Informe Nominal",
-      "Informe de Multas",
+      "Multas",
       "Verificación de vehículos",
     ],
     aggregateRating: {

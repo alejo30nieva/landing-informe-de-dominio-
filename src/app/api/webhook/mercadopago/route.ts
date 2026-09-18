@@ -338,7 +338,7 @@ function emailTemplate(orderId: string, amount: number) {
       <h1 style="margin:0 0 8px;font-size:20px">¡Pago aprobado!</h1>
       <p style="color:#374151;font-size:14px;line-height:1.5">
         Recibimos tu pago correctamente. Estamos procesando tu Informe
-        y te lo enviaremos a este mismo email en los próximos minutos.
+        y te lo enviaremos a este mismo email en 24 a 72 hs.
       </p>
       <div style="margin-top:16px;padding:14px;border-radius:10px;background:#F2F6FF;border:1px solid #E8EFFE">
         <div style="font-size:11px;text-transform:uppercase;color:#6B7280">Orden</div>

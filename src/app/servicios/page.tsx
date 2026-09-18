@@ -107,7 +107,7 @@ export default function ServiciosPage() {
               Servicios para tu <span className="text-brand-700">vehículo</span>
             </h1>
             <p className="mt-4 text-lg text-ink-700">
-              Informes online con entrega inmediata y trámites presenciales
+              Informes online con entrega en 24 a 72 hs y trámites presenciales
               de gestoría automotor en todo el país.
             </p>
 
@@ -144,7 +144,7 @@ export default function ServiciosPage() {
                 Comprá tu informe ahora
               </h2>
               <p className="mt-3 text-ink-700">
-                Pago seguro, entrega por email y WhatsApp en minutos. Sin
+                Pago seguro, entrega por email y WhatsApp en 24 a 72 hs. Sin
                 desplazamientos, sin papeleo.
               </p>
             </div>

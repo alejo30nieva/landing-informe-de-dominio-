@@ -27,7 +27,7 @@ export function FinalCTA() {
         >
           <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/10 border border-white/20 text-white text-xs font-semibold">
             <ShieldCheck className="h-3.5 w-3.5" />
-            Pago seguro · Entrega en minutos
+            Pago seguro · Entrega en 24 a 72 hs
           </span>
           <h2 className="mt-4 text-3xl md:text-4xl font-extrabold tracking-tight">
             ¿Estás por comprar un usado?
