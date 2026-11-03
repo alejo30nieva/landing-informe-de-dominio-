@@ -438,17 +438,14 @@ function StepService({
               </span>
               <span className="flex-1 min-w-0 overflow-hidden">
                 <span className="flex items-center gap-1.5 min-w-0">
-                  <span className="font-semibold text-[13.5px] text-brand-950 truncate min-w-0">
+                  {/* Sin truncate: en el celular un nombre largo ("Informe de
+                      Dominio Histórico") pasa a 2 líneas en vez de cortarse. */}
+                  <span className="font-semibold text-[13.5px] leading-snug text-brand-950 min-w-0">
                     {s.formLabel ?? s.title}
                   </span>
                   {isExpress && (
                     <span className="inline-flex items-center gap-0.5 px-1 py-0.5 rounded bg-warning text-white text-[8.5px] font-bold uppercase">
                       <Zap className="h-2.5 w-2.5" />
-                    </span>
-                  )}
-                  {isCombo && (
-                    <span className="inline-flex items-center px-1 py-0.5 rounded bg-success text-white text-[8.5px] font-bold uppercase">
-                      Combo
                     </span>
                   )}
                 </span>
@@ -459,9 +456,11 @@ function StepService({
                 )}
               </span>
               <span className="shrink-0 text-right">
+                {/* La etiqueta va sobre el precio y no al lado del nombre:
+                    en el celular, al lado del nombre cortaba "Histórico + Multas". */}
                 {isCombo && (
-                  <span className="block text-[8.5px] font-bold uppercase tracking-wider text-brand-700 mb-0.5 whitespace-nowrap">
-                    ★ Recomendado
+                  <span className="mb-0.5 inline-block rounded bg-success px-1.5 py-0.5 text-[8.5px] font-bold uppercase tracking-wider text-white">
+                    Combo
                   </span>
                 )}
                 <span className="block text-[14px] font-bold text-brand-950 whitespace-nowrap">
