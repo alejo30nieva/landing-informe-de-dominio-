@@ -1,13 +1,13 @@
 "use client";
 import { motion } from "framer-motion";
-import { ShieldCheck, Clock, Globe2, Lock, FileCheck2 } from "lucide-react";
+import { Clock, ShieldCheck, Lock } from "lucide-react";
 import { HeroForm } from "@/components/HeroForm";
+import { HeroReportCards } from "@/components/HeroReportCards";
 
-const bullets = [
-  { icon: FileCheck2, text: "Información oficial y actualizada" },
-  { icon: Clock, text: "Entrega en 24 a 72 hs" },
-  { icon: Globe2, text: "100% online" },
-  { icon: ShieldCheck, text: "Seguro y confidencial" },
+const benefits = [
+  { icon: Clock, title: "Entrega en 24 a 72 hs", desc: "Recibí tu informe por email." },
+  { icon: ShieldCheck, title: "100% online", desc: "Hacé tu pedido desde cualquier lugar." },
+  { icon: Lock, title: "Seguro y confidencial", desc: "Tus datos están protegidos." },
 ];
 
 export function Hero() {
@@ -40,7 +40,7 @@ export function Hero() {
         {/* min-w-0 en el grid Y en cada celda evita que el contenido
             (títulos largos, precios whitespace-nowrap) fuerce las columnas
             más anchas que el viewport → causa real del overflow a la derecha. */}
-        <div className="grid lg:grid-cols-2 gap-6 lg:gap-14 items-center min-w-0">
+        <div className="grid lg:grid-cols-2 gap-6 lg:gap-14 items-start min-w-0">
           {/* Texto: en mobile va segundo, en desktop primero */}
           <motion.div
             initial={{ opacity: 0, y: 16 }}
@@ -48,46 +48,44 @@ export function Hero() {
             transition={{ duration: 0.5, ease: "easeOut" }}
             className="order-2 lg:order-1 min-w-0"
           >
-            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-brand-50 border border-brand-100 text-brand-700 text-xs font-semibold">
-              <ShieldCheck className="h-3.5 w-3.5" />
-              Mandataria matriculada — Córdoba
-            </span>
-            <h1 className="mt-5 text-[clamp(1.9rem,7vw,3.5rem)] font-extrabold leading-[1.05] text-brand-950 tracking-tight break-words">
-              Informe de Dominio{" "}
-              <span className="text-brand-700">Automotor</span>
+            {/* El keyword de SEO ("Informe de Dominio Automotor") queda dentro
+                del h1 como antetítulo visible. */}
+            <h1 className="text-brand-950">
+              <span className="block text-[12px] font-bold uppercase tracking-[0.14em] text-brand-700">
+                Informes de dominio automotor y de personas
+              </span>
+              <span className="mt-4 block text-[clamp(2.1rem,6.5vw,3.6rem)] font-extrabold leading-[1.02] tracking-tight break-words">
+                Consultá antes de comprar.{" "}
+                <span className="text-brand-700">Decidí con seguridad.</span>
+              </span>
             </h1>
-            <p className="mt-5 text-lg text-ink-700 max-w-xl leading-relaxed">
-              Conocé el estado legal y registral de cualquier vehículo antes de{" "}
-              <strong className="text-brand-950">comprar</strong>,{" "}
-              <strong className="text-brand-950">vender</strong> o{" "}
-              <strong className="text-brand-950">transferir</strong>.
+            <p className="mt-5 text-lg text-ink-700 max-w-md leading-relaxed">
+              Información oficial y actualizada para comprar, vender o
+              transferir.
             </p>
 
-            <ul className="mt-7 grid sm:grid-cols-2 gap-3 max-w-xl">
-              {bullets.map(({ icon: Icon, text }) => (
-                <li
-                  key={text}
-                  className="flex items-center gap-2.5 text-[15px] text-ink-700"
-                >
-                  <span className="inline-flex h-7 w-7 items-center justify-center rounded-md bg-brand-50 text-brand-700">
-                    <Icon className="h-4 w-4" />
+            <ul className="mt-7 space-y-4 max-w-md">
+              {benefits.map(({ icon: Icon, title, desc }) => (
+                <li key={title} className="flex items-center gap-3.5">
+                  <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-brand-50 text-brand-700 ring-1 ring-brand-100">
+                    <Icon className="h-5 w-5" />
                   </span>
-                  {text}
+                  <span className="leading-tight">
+                    <span className="block text-[15px] font-semibold text-brand-950">
+                      {title}
+                    </span>
+                    <span className="block text-[13.5px] text-ink-500 mt-0.5">
+                      {desc}
+                    </span>
+                  </span>
                 </li>
               ))}
             </ul>
 
-            <div className="mt-7 inline-flex items-start gap-3 p-4 rounded-xl bg-success-50 border border-success/20 max-w-xl">
-              <Lock className="h-5 w-5 text-success shrink-0 mt-0.5" />
-              <div>
-                <p className="text-sm font-semibold text-brand-950">
-                  Tus datos están protegidos
-                </p>
-                <p className="text-xs text-ink-700 mt-0.5">
-                  Conexión cifrada, almacenamiento seguro y sin compartir
-                  información con terceros.
-                </p>
-              </div>
+            {/* Informes de ejemplo en miniatura: solo desktop, en el celular
+                el formulario va primero y ocupa el protagonismo. */}
+            <div className="hidden lg:block">
+              <HeroReportCards />
             </div>
           </motion.div>
 
