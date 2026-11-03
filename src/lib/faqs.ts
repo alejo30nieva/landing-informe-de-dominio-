@@ -26,7 +26,7 @@ export const FAQS = [
   },
   {
     q: "¿Cuánto cuesta un informe de dominio en Córdoba?",
-    a: "El Informe de Dominio Automotor cuesta desde $9.900. También ofrecemos Informe Histórico de Titulares ($13.900), Informe Nominal ($10.500) y Multas a nivel nacional ($17.200).",
+    a: "El Informe de Dominio Automotor cuesta $11.000. También ofrecemos Informe de Dominio Histórico ($12.000), Multas a nivel nacional ($17.000), Informe de Persona ($10.000), Informe Nominal ($11.000) y el combo Histórico + Multas ($25.000).",
   },
   {
     q: "¿Sirve para comprar un auto usado de forma segura?",

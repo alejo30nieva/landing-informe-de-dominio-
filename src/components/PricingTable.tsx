@@ -5,6 +5,7 @@ import {
   FileText,
   Users,
   UserSearch,
+  User,
   Banknote,
   Zap,
   ShoppingCart,
@@ -28,6 +29,7 @@ const ICONS: Record<string, any> = {
   FileText,
   Users,
   UserSearch,
+  User,
   Banknote,
   Zap,
   ShoppingCart,
@@ -40,6 +42,7 @@ const HIGHLIGHTED_ORDER = [
   "informe-historico-titulares",
   "informe-multas",
   "informe-multas-express",
+  "informe-persona",
   "informe-nominal",
 ];
 
@@ -55,6 +58,12 @@ const INCLUDES: Record<string, string[]> = {
     "Datos de inscripción",
     "Prendas y radicaciones",
     "Trazabilidad completa",
+  ],
+  "informe-persona": [
+    "Búsqueda por DNI",
+    "Fecha de nacimiento",
+    "Domicilio registrado",
+    "Fecha de fallecimiento (si corresponde)",
   ],
   "informe-nominal": [
     "Búsqueda por DNI / CUIT",

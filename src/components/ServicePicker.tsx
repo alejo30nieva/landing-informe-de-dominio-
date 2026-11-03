@@ -8,6 +8,7 @@ import {
   FileText,
   Users,
   UserSearch,
+  User,
   Banknote,
   ShoppingCart,
 } from "lucide-react";
@@ -20,6 +21,7 @@ const ICONS: Record<string, any> = {
   FileText,
   Users,
   UserSearch,
+  User,
   Banknote,
   Zap,
   ShoppingCart,

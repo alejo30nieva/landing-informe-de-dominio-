@@ -6,6 +6,7 @@ import { getSupabaseAdmin } from "@/lib/supabase";
 import { notifyEmail, notifyWhatsApp } from "@/lib/notify";
 import { cleanEnv } from "@/lib/utils";
 import { serviceSlugFromSku, serviceTitleFromSlug } from "@/lib/whatsapp";
+import { subjectLabel } from "@/lib/services";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -155,14 +156,16 @@ export async function POST(req: NextRequest) {
       (slugFromSku ? serviceTitleFromSlug(slugFromSku) : "") ||
       "Informe";
     const monto = payment.transaction_amount ?? 0;
+    // Informe de Persona / Nominal: el dato consultado es un DNI, no una patente.
+    const subject = subjectLabel(slugFromSku);
 
     // Mensaje COMPLETO con todos los datos del formulario, para emitir el informe.
     const fullMsg =
       `✅ NUEVO PAGO APROBADO\n\n` +
       `🧾 Servicio: ${servicio}\n` +
       `👤 Nombre: ${nombre}\n` +
-      `🚗 Patente: ${patente}\n` +
-      `🪪 DNI: ${dni}\n` +
+      `🔎 ${subject}: ${patente}\n` +
+      `🪪 DNI del cliente: ${dni}\n` +
       `📱 Teléfono: ${telefono}\n` +
       `📧 Email: ${email}\n` +
       `💰 Monto: $${Number(monto).toLocaleString("es-AR")}\n` +
@@ -189,6 +192,7 @@ export async function POST(req: NextRequest) {
     //     esté verificado en Resend, ese es el único inbox que Resend nunca rechaza.
     const adminHtml = adminEmailTemplate({
       servicio,
+      subject,
       nombre,
       patente,
       dni,
@@ -293,6 +297,8 @@ function verifyMpSignature(opts: {
 /** Email interno para la gestoría con TODOS los datos del pedido pagado. */
 function adminEmailTemplate(d: {
   servicio: string;
+  /** "Patente" o "DNI a consultar" según el informe. */
+  subject: string;
   nombre: string;
   patente: string;
   dni: string;
@@ -314,8 +320,8 @@ function adminEmailTemplate(d: {
       <table style="width:100%;border-collapse:collapse">
         ${row("Servicio", d.servicio)}
         ${row("Nombre", d.nombre)}
-        ${row("Patente", d.patente)}
-        ${row("DNI", d.dni)}
+        ${row(d.subject, d.patente)}
+        ${row("DNI del cliente", d.dni)}
         ${row("Teléfono", d.telefono)}
         ${row("Email", d.email)}
         ${row("Monto", "$" + d.monto.toLocaleString("es-AR"))}

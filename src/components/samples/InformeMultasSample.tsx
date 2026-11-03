@@ -1,7 +1,10 @@
+import { Receipt } from "lucide-react";
 import { SampleWrapper, SampleSection, Field, FieldGrid } from "./SampleWrapper";
 
 /**
- * Mockup del Informe de Infracciones (SUATS - Sistema Unificado).
+ * Mockup del Informe de Infracciones.
+ * Sin mencionar el sistema de origen a propósito: si se nombra, el cliente
+ * va y lo consulta por su cuenta (mismo criterio que con el enlace a la DNRPA).
  * Patente y solicitante modificados; importes mantenidos como referencia.
  *
  * Responsive: tabla en sm+, cards verticales en mobile.
@@ -20,12 +23,12 @@ export function InformeMultasSample({ express = false }: { express?: boolean }) 
     <SampleWrapper>
       {/* Header */}
       <div className="flex items-start sm:items-center gap-3 border-b border-ink-300 pb-3">
-        <div className="h-10 w-10 sm:h-10 sm:w-10 shrink-0 rounded-md bg-success/20 flex items-center justify-center font-bold text-success text-[9px] sm:text-[10px]">
-          SUATS
+        <div className="h-10 w-10 shrink-0 rounded-md bg-success/20 flex items-center justify-center text-success">
+          <Receipt className="h-5 w-5" aria-hidden="true" />
         </div>
         <div className="leading-tight flex-1 min-w-0">
           <div className="text-[9.5px] sm:text-[10.5px] text-ink-700 italic leading-snug">
-            Sistema Unificado de Administraciones Tributarias Subnacionales
+            Multas a nivel nacional
           </div>
           <h2 className="text-[13px] sm:text-[15px] font-bold text-brand-950 mt-0.5 flex items-center gap-1.5 flex-wrap">
             Informe de Infracciones

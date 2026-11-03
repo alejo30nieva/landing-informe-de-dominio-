@@ -18,6 +18,10 @@ export type Service = {
   selectableInForm?: boolean;
   /** Etiqueta corta para el selector (más compacto que el title). */
   shortLabel?: string;
+  /** Nombre que se muestra en la tarjeta del formulario (si no, usa title). */
+  formLabel?: string;
+  /** Descripción de una línea debajo del nombre en el formulario. */
+  formDesc?: string;
 };
 
 export const SERVICES: Service[] = [
@@ -25,11 +29,13 @@ export const SERVICES: Service[] = [
     slug: "informe-dominio",
     title: "Informe de Dominio Automotor",
     shortLabel: "Dominio",
+    formLabel: "Informe de Dominio",
+    formDesc: "Estado legal del vehículo (prendas, denuncias, etc.).",
     shortDesc:
       "Estado legal y registral completo del vehículo: titular, deudas, embargos, inhibiciones.",
     longDesc:
       "Documento oficial del Registro Nacional de la Propiedad del Automotor. Imprescindible antes de comprar un usado.",
-    priceARS: 9900,
+    priceARS: 11000,
     delivery: "10–15 minutos",
     icon: "FileText",
     category: "informes",
@@ -41,11 +47,13 @@ export const SERVICES: Service[] = [
     slug: "informe-historico-titulares",
     title: "Informe Histórico de Titulares",
     shortLabel: "Histórico",
+    formLabel: "Informe de Dominio Histórico",
+    formDesc: "Cantidad de titulares y quiénes fueron.",
     shortDesc:
       "Informe del vehículo con información registral y todos los titulares/dueños que tuvo.",
     longDesc:
       "Documento DNRPA con la trazabilidad completa: titular actual, titulares anteriores, datos de inscripción, prendas, inhibiciones y radicaciones previas.",
-    priceARS: 13900,
+    priceARS: 12000,
     delivery: "10–20 minutos",
     icon: "Users",
     category: "informes",
@@ -57,26 +65,45 @@ export const SERVICES: Service[] = [
     slug: "informe-nominal",
     title: "Informe Nominal",
     shortLabel: "Nominal",
+    formDesc: "Consulta de qué vehículos tiene a su nombre una persona.",
     shortDesc:
       "Conocé qué vehículos figuran registrados a nombre de una persona en todo el país.",
     longDesc:
       "Búsqueda nacional cruzada por DNI o CUIT/CUIL. Útil para sucesiones, divorcios, juicios o auditorías patrimoniales.",
-    priceARS: 10500,
+    priceARS: 11000,
     delivery: "15–30 minutos",
     icon: "UserSearch",
     category: "informes",
     featured: true,
     hasSample: true,
+    selectableInForm: true,
+  },
+  {
+    slug: "informe-persona",
+    title: "Informe de Persona",
+    shortLabel: "Persona",
+    formDesc:
+      "Fecha de nacimiento, dirección y, si corresponde, fecha de fallecimiento.",
+    shortDesc:
+      "Datos de una persona: fecha de nacimiento, domicilio y, si corresponde, fecha de fallecimiento.",
+    longDesc:
+      "Consulta por DNI con información personal de la persona: fecha de nacimiento, domicilio registrado y, si corresponde, fecha de fallecimiento.",
+    priceARS: 10000,
+    delivery: "24 a 72 hs",
+    icon: "User",
+    category: "informes",
+    selectableInForm: true,
   },
   {
     slug: "informe-multas",
-    title: "Multas",
+    title: "Multas Nacional",
     shortLabel: "Multas",
+    formDesc: "Infracciones registradas a nivel nacional.",
     shortDesc:
       "Consulta de multas a nivel nacional en municipalidades, provincias y CABA.",
     longDesc:
-      "Sistema Unificado de Administraciones Tributarias Subnacionales (SUATS). Detalle por jurisdicción, fecha, lugar, código de infracción e importe.",
-    priceARS: 17200,
+      "Detalle de infracciones por jurisdicción: fecha, lugar, código de infracción e importe.",
+    priceARS: 17000,
     delivery: "20–40 minutos",
     icon: "Banknote",
     category: "informes",
@@ -86,13 +113,14 @@ export const SERVICES: Service[] = [
   },
   {
     slug: "informe-multas-express",
-    title: "Multas EXPRESS",
+    title: "Multas Express",
     shortLabel: "Multas Express",
+    formDesc: "Infracciones con entrega más rápida.",
     shortDesc:
       "Consulta de multas con prioridad. Se entrega en menos de 8 horas hábiles.",
     longDesc:
       "Igual que la consulta de Multas pero con prioridad en la cola. Puede estar listo mucho antes según disponibilidad del sistema.",
-    priceARS: 22600,
+    priceARS: 20000,
     delivery: "Hasta 8 hs hábiles",
     icon: "Zap",
     category: "informes",
@@ -103,11 +131,13 @@ export const SERVICES: Service[] = [
     slug: "informe-compra-segura",
     title: "Combo Histórico + Multas",
     shortLabel: "Combo",
+    formLabel: "Histórico + Multas",
+    formDesc: "Incluye informe histórico + informe de multas.",
     shortDesc:
       "Histórico de titulares + Multas a nivel nacional. El combo ideal antes de comprar.",
     longDesc:
-      "Paquete combinado con descuento: incluye el Informe Histórico de Titulares y las Multas a nivel nacional. Ahorrás vs. comprarlos por separado ($13.900 + $17.200 = $31.100).",
-    priceARS: 25500,
+      "Paquete combinado con descuento: incluye el Informe Histórico de Titulares y las Multas a nivel nacional. Ahorrás vs. comprarlos por separado ($12.000 + $17.000 = $29.000).",
+    priceARS: 25000,
     delivery: "30–60 minutos",
     icon: "ShoppingCart",
     category: "informes",
@@ -272,8 +302,24 @@ export const FORM_DISPLAY_ORDER = [
   "informe-historico-titulares",
   "informe-multas",
   "informe-multas-express",
+  "informe-persona",
   "informe-nominal", // último
 ];
+
+/**
+ * Informes que se consultan por DNI de una persona (no por patente).
+ * El paso 3 del formulario pide el DNI a consultar en vez de la patente.
+ */
+const PERSON_SUBJECT_SLUGS = new Set(["informe-persona", "informe-nominal"]);
+
+export function isPersonService(slug: string | null | undefined): boolean {
+  return !!slug && PERSON_SUBJECT_SLUGS.has(slug);
+}
+
+/** Etiqueta del dato a consultar: "Patente" o "DNI a consultar". */
+export function subjectLabel(slug: string | null | undefined): string {
+  return isPersonService(slug) ? "DNI a consultar" : "Patente";
+}
 
 /**
  * Servicios que pueden seleccionarse y comprarse desde el formulario del hero.

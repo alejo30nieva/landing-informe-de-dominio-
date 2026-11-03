@@ -21,6 +21,7 @@ import {
   Car,
   IdCard,
   ChevronRight,
+  User,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -35,6 +36,8 @@ import {
   getServiceBySlug,
   getComboSavings,
   DEFAULT_FORM_SERVICE,
+  isPersonService,
+  subjectLabel,
   type Service,
 } from "@/lib/services";
 import { CheckoutModal } from "@/components/CheckoutModal";
@@ -47,6 +50,7 @@ const SVC_ICONS: Record<string, any> = {
   Banknote,
   Zap,
   ShoppingCart,
+  User,
 };
 
 const TOTAL_STEPS = 6;
@@ -227,7 +231,9 @@ export function HeroForm() {
                 Paso {step} de {TOTAL_STEPS}
               </div>
               <h3 className="text-[14px] font-semibold text-brand-950 truncate">
-                {STEP_TITLES[step]}
+                {step === 3 && isPersonService(selectedSlug)
+                  ? "DNI a consultar"
+                  : STEP_TITLES[step]}
               </h3>
             </div>
             {/* Espacio simétrico al back button para mantener el título realmente centrado */}
@@ -302,6 +308,7 @@ export function HeroForm() {
                       })
                     }
                     onEnter={goNext}
+                    byPerson={isPersonService(selectedSlug)}
                   />
                 )}
 
@@ -432,7 +439,7 @@ function StepService({
               <span className="flex-1 min-w-0 overflow-hidden">
                 <span className="flex items-center gap-1.5 min-w-0">
                   <span className="font-semibold text-[13.5px] text-brand-950 truncate min-w-0">
-                    {s.title}
+                    {s.formLabel ?? s.title}
                   </span>
                   {isExpress && (
                     <span className="inline-flex items-center gap-0.5 px-1 py-0.5 rounded bg-warning text-white text-[8.5px] font-bold uppercase">
@@ -445,6 +452,11 @@ function StepService({
                     </span>
                   )}
                 </span>
+                {s.formDesc && (
+                  <span className="mt-0.5 block text-[11.5px] leading-snug text-ink-500 line-clamp-2">
+                    {s.formDesc}
+                  </span>
+                )}
               </span>
               <span className="shrink-0 text-right">
                 {isCombo && (
@@ -534,6 +546,7 @@ function StepPatente({
   value,
   setValue,
   onEnter,
+  byPerson = false,
 }: {
   register: any;
   error?: string;
@@ -541,6 +554,8 @@ function StepPatente({
   value: string;
   setValue: (v: string) => void;
   onEnter: () => void;
+  /** Informe de Persona / Nominal: se pide el DNI a consultar, no la patente. */
+  byPerson?: boolean;
 }) {
   const ref = useRef<HTMLInputElement | null>(null);
   useEffect(() => {
@@ -550,8 +565,14 @@ function StepPatente({
   return (
     <div>
       <p className="text-[12.5px] text-ink-700 mb-3 flex items-center gap-1.5">
-        <Car className="h-4 w-4 text-brand-700" />
-        Ingresá la patente que querés consultar.
+        {byPerson ? (
+          <User className="h-4 w-4 text-brand-700" />
+        ) : (
+          <Car className="h-4 w-4 text-brand-700" />
+        )}
+        {byPerson
+          ? "Ingresá el DNI de la persona que querés consultar."
+          : "Ingresá la patente que querés consultar."}
       </p>
       <div className="relative">
         <Input
@@ -560,9 +581,11 @@ function StepPatente({
             register("patente").ref(el);
             ref.current = el;
           }}
-          inputMode="text"
+          inputMode={byPerson ? "numeric" : "text"}
           autoComplete="off"
-          placeholder="Auto o moto — ej: AB123CD, ABC123, A123BCD"
+          placeholder={
+            byPerson ? "Ej: 30123456" : "Auto o moto — ej: AB123CD, ABC123, A123BCD"
+          }
           aria-invalid={!!error}
           invalid={!!error}
           value={value}
@@ -583,7 +606,9 @@ function StepPatente({
         <p className="mt-1.5 text-[11px] text-danger">{error}</p>
       ) : (
         <p className="mt-1.5 text-[11px] text-ink-500">
-          Formato Mercosur (AB123CD) o tradicional (ABC123)
+          {byPerson
+            ? "Solo números, sin puntos"
+            : "Autos y motos, en cualquier formato"}
         </p>
       )}
     </div>
@@ -739,8 +764,8 @@ function StepConfirm({
         </div>
         <div className="mt-2 grid gap-1 text-[11.5px] text-ink-700">
           <SummaryLine label="Nombre" value={values.nombre} />
-          <SummaryLine label="Patente" value={values.patente} mono />
-          <SummaryLine label="DNI" value={values.dni} mono />
+          <SummaryLine label={subjectLabel(service.slug)} value={values.patente} mono />
+          <SummaryLine label="Tu DNI" value={values.dni} mono />
           <SummaryLine label="Email" value={values.email} />
           <SummaryLine label="WhatsApp" value={values.telefono} />
         </div>

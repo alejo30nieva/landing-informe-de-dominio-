@@ -1,5 +1,5 @@
 import { COMPANY } from "@/lib/company";
-import { getServiceBySlug, type Service } from "@/lib/services";
+import { getServiceBySlug, isPersonService, type Service } from "@/lib/services";
 
 /**
  * Fuente ÚNICA del número de WhatsApp y de la lógica de armado de links.
@@ -28,6 +28,7 @@ const SKU_PREFIX: Record<string, string> = {
   "informe-multas-express": "MULEX",
   "informe-compra-segura": "COMBO",
   "informe-nominal": "NOM",
+  "informe-persona": "PER",
   "valuacion-fiscal": "VAL",
   "informe-prueba": "TEST",
 };
@@ -75,12 +76,18 @@ export type PurchaseData = {
  */
 export function postPurchaseMessage(opts: PurchaseData): string {
   const { serviceTitle, sku, nombre, patente, dni, telefono, email } = opts;
+  // Informe de Persona / Nominal: el dato consultado es un DNI, no una patente.
+  const byPerson = isPersonService(serviceSlugFromSku(sku));
   const lines = [
     `¡Hola! Acabo de pagar y les envío el comprobante con mis datos:`,
     ``,
     `🧾 Servicio: ${serviceTitle}`,
     nombre ? `👤 Nombre: ${nombre}` : null,
-    patente ? `🚗 Patente: ${patente}` : null,
+    patente
+      ? byPerson
+        ? `🔎 DNI a consultar: ${patente}`
+        : `🚗 Patente: ${patente}`
+      : null,
     dni ? `🪪 DNI: ${dni}` : null,
     telefono ? `📱 Teléfono: ${telefono}` : null,
     email ? `📧 Email: ${email}` : null,
