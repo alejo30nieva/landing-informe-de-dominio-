@@ -12,10 +12,15 @@ import {
 
 /**
  * Foto del auto detrás de los informes (PNG recortado, fondo transparente,
- * ~1600px de ancho, en /public). Mientras sea null, los informes se muestran
- * solos sobre un halo suave — no queda ningún hueco.
+ * en /public). Sin marca a propósito: se le borraron el "208" del capó, el
+ * león de la parrilla, la patente y los logos de las tazas. Con null, los
+ * informes se muestran solos sobre un halo suave.
  */
-const CAR_IMAGE: { src: string; width: number; height: number } | null = null;
+const CAR_IMAGE: { src: string; width: number; height: number } | null = {
+  src: "/auto-hero.png",
+  width: 1439,
+  height: 827,
+};
 
 type Row = { icon: LucideIcon; tone: "ok" | "bad" | "neutral"; label: string };
 
@@ -144,7 +149,7 @@ export function HeroReportCards() {
             alt=""
             width={CAR_IMAGE.width}
             height={CAR_IMAGE.height}
-            sizes="600px"
+            sizes="(min-width: 1280px) 552px, 430px"
             className="absolute left-1/2 top-0 w-[92%] -translate-x-1/2"
           />
         )}
