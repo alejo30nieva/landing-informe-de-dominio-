@@ -164,7 +164,7 @@ export function InformeMultasSample({ express = false }: { express?: boolean }) 
         </div>
 
         {/* Total — visible siempre */}
-        <div className="mt-3 sm:hidden flex items-center justify-between gap-2 px-3 py-2 bg-ink-100 border-t-2 border-ink-300 rounded-md">
+        <div className="mt-3 sm:hidden flex items-center justify-between gap-2 px-3 py-2 bg-ink-100 border-t-2 border-ink-300">
           <span className="text-[11px] font-bold text-brand-950">
             Total Córdoba
           </span>
